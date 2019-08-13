@@ -5,6 +5,7 @@
 #include <QString>
 #include <QMap>
 #include <QVector>
+#include <QPixmap>
 
 //Description
 enum FieldType
@@ -86,14 +87,23 @@ struct SelectionValue : public IFieldValue
 
 struct GObjectType
 {
-    QString name;
+    QString name;    
+    QPixmap icon;
     QMap<QString, PtrFieldDescription> pFieldDescriptions;
 };
 
-QDataStream& operator<<(QDataStream& stream, const PtrFieldDescription fieldDescription);
-QDataStream& operator>>(QDataStream& stream, PtrFieldDescription fieldDescription);
+struct GRules
+{
+    QHash<QString, int> mapAmountObjects;
+};
+
+QDataStream& operator<<(QDataStream& stream, const PtrFieldDescription& fieldDescription);
+QDataStream& operator>>(QDataStream& stream, PtrFieldDescription& fieldDescription);
 QDataStream& operator<<(QDataStream& stream, const GObjectType& objectType);
 QDataStream& operator>>(QDataStream& stream, GObjectType& objectType);
+//QDataStream& operator<<(QDataStream& stream, const QVector<GObjectType>& objectTypes);
+//QDataStream& operator>>(QDataStream& stream, QVector<GObjectType>& objectTypes);
+
 
 
 

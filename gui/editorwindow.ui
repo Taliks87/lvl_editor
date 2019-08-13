@@ -22,16 +22,6 @@
      <enum>QLayout::SetDefaultConstraint</enum>
     </property>
     <item>
-     <widget class="QListView" name="listView">
-      <property name="maximumSize">
-       <size>
-        <width>200</width>
-        <height>16777215</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
      <widget class="QTableView" name="tableView"/>
     </item>
     <item>
@@ -44,12 +34,12 @@
       </property>
       <column>
        <property name="text">
-        <string>Object</string>
+        <string>Property</string>
        </property>
       </column>
       <column>
        <property name="text">
-        <string>Type</string>
+        <string>Value</string>
        </property>
       </column>
      </widget>

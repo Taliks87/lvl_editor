@@ -1,6 +1,6 @@
 #include "core/game_object_description.h"
 
-QDataStream& operator<<(QDataStream& stream, const PtrFieldDescription pFieldDescription)
+QDataStream& operator<<(QDataStream& stream, const PtrFieldDescription& pFieldDescription)
 {
     stream << pFieldDescription->type();
     switch(pFieldDescription->type())
@@ -29,7 +29,7 @@ QDataStream& operator<<(QDataStream& stream, const PtrFieldDescription pFieldDes
     return stream;
 }
 
-QDataStream& operator>>(QDataStream& stream, PtrFieldDescription pFieldDescription)
+QDataStream& operator>>(QDataStream& stream, PtrFieldDescription& pFieldDescription)
 {
     unsigned type;
     stream >> type;
@@ -64,12 +64,26 @@ QDataStream& operator>>(QDataStream& stream, PtrFieldDescription pFieldDescripti
 
 QDataStream& operator<<(QDataStream& stream, const GObjectType& objectType)
 {
-    stream << objectType.name << objectType.pFieldDescriptions;
+    stream << objectType.name << objectType.icon << objectType.pFieldDescriptions;
     return stream;
 }
 
 QDataStream& operator>>(QDataStream& stream, GObjectType& objectType)
 {
-    stream >> objectType.name >> objectType.pFieldDescriptions;
+    stream >> objectType.name >> objectType.icon >> objectType.pFieldDescriptions;
+
     return stream;
 }
+
+//QDataStream& operator<<(QDataStream& stream, const QVector<GObjectType>& objectTypes)
+//{
+//    //stream << objectType.name << objectType.icon << objectType.pFieldDescriptions;
+//    return stream;
+//}
+
+//QDataStream& operator>>(QDataStream& stream, QVector<GObjectType>& objectTypes)
+//{
+//    //stream >> objectType.name >> objectType.icon >> objectType.pFieldDescriptions;
+
+//    return stream;
+//}

@@ -6,9 +6,8 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    gui::EditorWindow w;
+    EditorWindow w;
     w.show();
-
 
     return app.exec();
 }
