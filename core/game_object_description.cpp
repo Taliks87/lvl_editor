@@ -1,4 +1,65 @@
 #include "core/game_object_description.h"
+#include <QDebug>
+
+void FloatDescription::deserialize(const QJsonObject& jsObj)
+{
+    from = static_cast<float>(jsObj["from"].toDouble());
+    to = static_cast<float>(jsObj["to"].toDouble());
+}
+
+void IntDescription::deserialize(const QJsonObject& jsObj)
+{
+    from = jsObj["from"].toInt();
+    to = jsObj["to"].toInt();
+}
+
+void SelectionDescription::deserialize(const QJsonObject& jsObj)
+{
+    QJsonArray jsArrayVariantss = jsObj["variants"].toArray();
+    int amountVariants =  jsArrayVariantss.size();
+    variants.resize(amountVariants);
+    for (int i = 0; i < amountVariants; ++i)
+    {
+        variants[i] = jsArrayVariantss[i].toString();
+    }
+}
+
+void PawnType::deserialize(const QJsonObject& jsObj, const QString& rootPath)
+{
+    qWarning() <<  jsObj;
+    name = jsObj["name"].toString();
+    //TODO: error
+    icon = QPixmap(rootPath + jsObj["img"].toString());
+    QJsonArray jsArrayProperties = jsObj["properties"].toArray();
+    //read properties
+    for (auto jsNodePropertie : jsArrayProperties)
+    {
+        QJsonObject jsPropertie = jsNodePropertie.toObject();
+        QString type = jsPropertie["type"].toString();
+        //TODO::error
+        PtrFieldDescription pPropertie;
+        if( type == "float") {
+            pPropertie = PtrFieldDescription(new FloatDescription);
+        } else if( type == "int") {
+            pPropertie = PtrFieldDescription(new IntDescription);
+        } else if( type == "selection") {
+            pPropertie = PtrFieldDescription(new SelectionDescription);
+        }
+        pPropertie->deserialize(jsPropertie);
+        pFieldDescriptions.insert(jsPropertie["name"].toString(),pPropertie);
+    }
+}
+
+void GameRules::deserialize(QJsonValue& jsValue)
+{
+    //read pawn_rules
+    QJsonArray jsNodeObjRules = jsValue["pawn_rules"].toArray();
+    for (int i = 0; i < jsNodeObjRules.size(); ++i)
+    {
+        QJsonObject jsObjRules = jsNodeObjRules[i].toObject();
+        mapAmountPawns.insert(jsObjRules["name"].toString(), jsObjRules["amount"].toInt());
+    }
+}
 
 QDataStream& operator<<(QDataStream& stream, const PtrFieldDescription& pFieldDescription)
 {
@@ -62,15 +123,15 @@ QDataStream& operator>>(QDataStream& stream, PtrFieldDescription& pFieldDescript
     return stream;
 }
 
-QDataStream& operator<<(QDataStream& stream, const GObjectType& objectType)
+QDataStream& operator<<(QDataStream& stream, const PawnType& pawnType)
 {
-    stream << objectType.name << objectType.icon << objectType.pFieldDescriptions;
+    stream << pawnType.name << pawnType.icon << pawnType.pFieldDescriptions;
     return stream;
 }
 
-QDataStream& operator>>(QDataStream& stream, GObjectType& objectType)
+QDataStream& operator>>(QDataStream& stream, PawnType& pawnType)
 {
-    stream >> objectType.name >> objectType.icon >> objectType.pFieldDescriptions;
+    stream >> pawnType.name >> pawnType.icon >> pawnType.pFieldDescriptions;
 
     return stream;
 }

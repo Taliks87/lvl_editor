@@ -26,32 +26,32 @@ CONFIG += c++11
 
 SOURCES += \
         gui/dialog_enter_level.cpp \
-        gui/editorwindow.cpp \        
+        gui/editorwindow.cpp \
+        gui/widget_map.cpp \
+        gui/widget_objects.cpp \
         gui/widget_object_types.cpp \
         main.cpp \
-        core/editor.cpp \
         core/game_object.cpp \
         core/game_object_description.cpp \
-        core/level_map.cpp \
         model/list_model_object_types.cpp
-
 
 HEADERS += \
         gui/dialog_enter_level.h \
         gui/editorwindow.h \
         core/config.h \
-        core/editor.h \
         core/game_object.h \
         core/game_object_description.h \
-        core/level_map.h \
+        gui/widget_map.h \
         gui/widget_object_types.h \
+        gui/widget_objects.h \
         model/list_model_object_types.h
-
 
 FORMS += \
         gui/dialog_enter_level.ui \
         gui/editorwindow.ui \
-        gui/widget_object_types.ui
+        gui/widget_map.ui \
+        gui/widget_object_types.ui \
+        gui/widget_objects.ui
 
 INCLUDEPATH += $$PWD/include
 

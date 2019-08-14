@@ -1,12 +1,19 @@
 #include "widget_object_types.h"
 #include "ui_widget_object_types.h"
+#include "core/game_object_description.h"
 
-WidgetObjectTypes::WidgetObjectTypes(QVector<GObjectType>* pData_, QWidget *parent) :
+
+WidgetObjectTypes::WidgetObjectTypes(GameData* pData, QWidget *parent) :
     QFrame(parent),
     ui(new Ui::WidgetObjectTypes),
-    listModelObjectTypes(pData_)
+    listModelObjectTypes(pData, this)
 {
-    ui->setupUi(this);    
+    ui->setupUi(this);
+    ui->listView->setDragEnabled(true);
+}
+
+void WidgetObjectTypes::refreshData()
+{
     ui->listView->setModel(&listModelObjectTypes);
 }
 

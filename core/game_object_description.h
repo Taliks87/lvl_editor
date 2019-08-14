@@ -6,6 +6,9 @@
 #include <QMap>
 #include <QVector>
 #include <QPixmap>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
 
 //Description
 enum FieldType
@@ -19,14 +22,16 @@ struct IFieldDescription
 {
     virtual ~IFieldDescription() = default;
     virtual FieldType type() = 0;
+    virtual void deserialize(const QJsonObject& jsObj) = 0;
 };
 
 using PtrFieldDescription = std::shared_ptr<IFieldDescription>;
 
 struct FloatDescription : public IFieldDescription
 {
-    virtual ~FloatDescription() = default;
-    FieldType type() { return FieldType::FLOAT; }
+    ~FloatDescription() override = default;
+    FieldType type() override { return FieldType::FLOAT; }
+    void deserialize(const QJsonObject& jsObj) override;
 
     float from;
     float to;
@@ -36,8 +41,9 @@ using PtrFloatDescription = std::shared_ptr<FloatDescription>;
 
 struct IntDescription : public IFieldDescription
 {
-    virtual ~IntDescription() = default;
-    FieldType type() { return FieldType::INT; }
+    ~IntDescription() override = default;
+    FieldType type() override { return FieldType::INT; }
+    void deserialize(const QJsonObject& jsObj) override;
 
     int from;
     int to;
@@ -47,60 +53,40 @@ using PtrIntDescription = std::shared_ptr<IntDescription>;
 
 struct SelectionDescription : public IFieldDescription
 {
-    virtual ~SelectionDescription() = default;
-    FieldType type() { return FieldType::SELECTION; }
+    ~SelectionDescription() override = default;
+    FieldType type() override { return FieldType::SELECTION; }
+    void deserialize(const QJsonObject& jsObj) override;
 
     QVector<QString> variants;
 };
 
 using PtrSelectionDescription = std::shared_ptr<SelectionDescription>;
 
-struct IFieldValue
-{    
-    virtual ~IFieldValue() = default;
-    virtual FieldType type() = 0;
+struct GameRules
+{
+    GameRules() : mapSize(30,15), mapAmountPawns(){}
+    void deserialize(QJsonValue& jsValue);
+
+    const QPoint mapSize;
+    QHash<QString, int> mapAmountPawns;
 };
 
-struct FloatValue : public IFieldValue
+struct PawnType
 {
-    virtual ~FloatValue() = default;
-    FieldType type() { return FieldType::FLOAT; }
+    void deserialize(const QJsonObject& jsObj, const QString& rootPath);
 
-    float m_value;
-};
-
-struct IntValue : public IFieldValue
-{
-    virtual ~IntValue() = default;
-    FieldType type() { return FieldType::INT; }
-
-    float m_value;
-};
-
-struct SelectionValue : public IFieldValue
-{
-    virtual ~SelectionValue() = default;
-    FieldType type() { return FieldType::SELECTION; }
-
-    unsigned m_id;
-};
-
-struct GObjectType
-{
-    QString name;    
+    QString name;
     QPixmap icon;
     QMap<QString, PtrFieldDescription> pFieldDescriptions;
 };
 
-struct GRules
-{
-    QHash<QString, int> mapAmountObjects;
-};
+using PawnTypes = QVector<PawnType>;
+using PtrPawnTypes = std::shared_ptr<PawnTypes>;
 
 QDataStream& operator<<(QDataStream& stream, const PtrFieldDescription& fieldDescription);
 QDataStream& operator>>(QDataStream& stream, PtrFieldDescription& fieldDescription);
-QDataStream& operator<<(QDataStream& stream, const GObjectType& objectType);
-QDataStream& operator>>(QDataStream& stream, GObjectType& objectType);
+QDataStream& operator<<(QDataStream& stream, const PawnType& objectType);
+QDataStream& operator>>(QDataStream& stream, PawnType& objectType);
 //QDataStream& operator<<(QDataStream& stream, const QVector<GObjectType>& objectTypes);
 //QDataStream& operator>>(QDataStream& stream, QVector<GObjectType>& objectTypes);
 

@@ -1,6 +1,8 @@
 #include "gui/editorwindow.h"
 #include "gui/dialog_enter_level.h"
 #include "gui/widget_object_types.h"
+#include "gui/widget_map.h"
+#include "gui/widget_objects.h"
 #include "ui_editorwindow.h"
 #include <QMessageBox>
 #include <QFile>
@@ -15,23 +17,30 @@ EditorWindow::EditorWindow(QWidget *parent) :
     ui(new Ui::EditorWindow),
     dialogLevelName(new DialogEnterLevel(this)),
     widgetObjectTypes(nullptr),
+    widgetMap(nullptr),
+    widgetObjects(nullptr),
     rootPath(QDir::currentPath() + "/data/"),
     configPath(rootPath + "/config.json"),
-    gObjectTypes(),
-    gRules(),
+    gameData(),
     levelEvent(LevelEvent::none),
     levelName("")
 {
+    gameData.pPawnTypes = PtrPawnTypes(new  PawnTypes());
     ui->setupUi(this);
-    widgetObjectTypes = new WidgetObjectTypes(&gObjectTypes, ui->centralWidget);
+    widgetObjectTypes = new WidgetObjectTypes(&gameData, ui->centralWidget);
+    widgetMap = new WidgetMap(&gameData, ui->centralWidget);
+    widgetObjects = new WidgetObjects(&gameData, ui->centralWidget);
     ui->horizontalLayout->addWidget(widgetObjectTypes);
-    connect(dialogLevelName, SIGNAL(enter_name(QString)), this, SLOT(enter_level(QString)));
-
+    ui->horizontalLayout->addWidget(widgetMap);
+    ui->horizontalLayout->addWidget(widgetObjects);
+    connect(dialogLevelName, SIGNAL(enter_name(QString)), this, SLOT(enter_level(QString)));    
 }
 
 EditorWindow::~EditorWindow()
 {
     delete widgetObjectTypes;
+    delete widgetMap;
+    delete widgetObjects;
     delete dialogLevelName;
     delete ui;
 }
@@ -42,21 +51,22 @@ void EditorWindow::showEvent( QShowEvent* event ) {
     QFileInfo checkFile(configPath);
     if(checkFile.exists() && checkFile.isFile() && configFile.open(QFile::ReadOnly | QIODevice::Text))
     {
-        QString val = configFile.readAll();
-        qWarning() << val;
+        QString val = configFile.readAll();        
         QJsonDocument jsonDoc = QJsonDocument::fromJson(val.toUtf8());
         QJsonObject jsonObj = jsonDoc.object();
-        //rules
-        QJsonValue jsNodeRules = jsonObj["rules"];
-        qWarning() << jsNodeRules;
-        //object_rules
-        QJsonArray jsNodeObjRules = jsNodeRules["object_rules"].toArray();
-        for (int npcIndex = 0; npcIndex < jsNodeObjRules.size(); ++npcIndex) {
-            QJsonObject objectRules = jsNodeObjRules[npcIndex].toObject();
-            qWarning() <<  objectRules;
-            gRules.mapAmountObjects.insert(objectRules["name"].toString(), objectRules["amount"].toInt());
+        //read rules
+        QJsonValue jsNodeRules = jsonObj["rules"];        
+        //read object_rules
+        gameData.rules.deserialize(jsNodeRules);
+        // read object type
+        QJsonArray jsNodeObjTypes = jsonObj["pawn_types"].toArray();
+        int amountObjTypes = jsNodeObjTypes.size();
+        gameData.pPawnTypes->resize(amountObjTypes);
+        for (int i = 0; i < amountObjTypes; ++i) {
+            (*gameData.pPawnTypes)[i].deserialize(jsNodeObjTypes[i].toObject(),rootPath);
         }
-    } else {
+        widgetObjectTypes->refreshData();
+    } else {        
         QMessageBox::critical(this, "Error", "Can't open config file");
     }
     configFile.close();

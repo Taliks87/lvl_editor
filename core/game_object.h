@@ -1,37 +1,61 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include "core/game_object_description.h"
+#include <QHash>
+#include <QPoint>
+#include <QBitmap>
 
-#include "core/config.h"
-
-class GObjectType;
-class IFieldValue;
-
-//Image
-class Image
+struct IFieldValue
 {
-    std::string path;
+    virtual ~IFieldValue() = default;
+    virtual FieldType type() = 0;
 };
+
+struct FloatValue : public IFieldValue
+{
+    virtual ~FloatValue() = default;
+    FieldType type() { return FieldType::FLOAT; }
+
+    float m_value;
+};
+
+struct IntValue : public IFieldValue
+{
+    virtual ~IntValue() = default;
+    FieldType type() { return FieldType::INT; }
+
+    float m_value;
+};
+
+struct SelectionValue : public IFieldValue
+{
+    virtual ~SelectionValue() = default;
+    FieldType type() { return FieldType::SELECTION; }
+
+    unsigned m_id;
+};
+
+using GPawnTypeId = unsigned;
 
 //Object
-class GObject
+struct GamePawn
 {
-    GObjectTypeId typeId;
-    std::string name;
-    Point position;
-    Image img;
-    
-    GObjectType* description;
-    std::vector<IFieldValue> fieldValues;
+    GPawnTypeId typeId;
+    QString name;
+    QPoint position;
+    QBitmap icon;
+        
+    QVector<IFieldValue*> fieldValues;
 };
 
-class GObjectEditor
+using LevelData = QHash<QPoint, GamePawn>;
+using PtrLevelData = std::shared_ptr<LevelData>;
+
+struct GameData
 {
-public:
-    void selectObject(GObject* selectGObject);
-    void deselectObject();
-    
-private:
-    GObject* m_gObject;
+    GameRules rules;
+    PtrPawnTypes pPawnTypes;
+    QMap<QString, PtrLevelData> levelMaps;
 };
+
+
