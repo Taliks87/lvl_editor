@@ -1,7 +1,7 @@
 #include "widget_objects.h"
 #include "ui_widget_objects.h"
 
-WidgetObjects::WidgetObjects(GameData* pData, QWidget *parent) :
+WidgetObjects::WidgetObjects(GameData& data, QWidget *parent) :
     QFrame(parent),
     ui(new Ui::WidgetObjects)
 {

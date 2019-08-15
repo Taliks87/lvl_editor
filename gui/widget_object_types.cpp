@@ -2,19 +2,23 @@
 #include "ui_widget_object_types.h"
 #include "core/game_object_description.h"
 
-
-WidgetObjectTypes::WidgetObjectTypes(GameData* pData, QWidget *parent) :
+WidgetObjectTypes::WidgetObjectTypes(GameData& data, QWidget *parent) :
     QFrame(parent),
     ui(new Ui::WidgetObjectTypes),
-    listModelObjectTypes(pData, this)
+    listModelObjectTypes(data, this)
 {
     ui->setupUi(this);
-    ui->listView->setDragEnabled(true);
+    auto& list = ui->listView;
+    list->setSelectionMode(QAbstractItemView::SingleSelection);
+    list->setDragEnabled(true);
+    list->setAcceptDrops(true);
+    list->setDropIndicatorShown(true);
+    list->setModel(&listModelObjectTypes);
 }
 
 void WidgetObjectTypes::refreshData()
 {
-    ui->listView->setModel(&listModelObjectTypes);
+    ui->listView->reset();
 }
 
 WidgetObjectTypes::~WidgetObjectTypes()

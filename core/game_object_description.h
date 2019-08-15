@@ -3,8 +3,7 @@
 #include <memory>
 #include <QDataStream>
 #include <QString>
-#include <QMap>
-#include <QVector>
+#include <QSet>
 #include <QPixmap>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -57,7 +56,7 @@ struct SelectionDescription : public IFieldDescription
     FieldType type() override { return FieldType::SELECTION; }
     void deserialize(const QJsonObject& jsObj) override;
 
-    QVector<QString> variants;
+    QSet<QString> variants;
 };
 
 using PtrSelectionDescription = std::shared_ptr<SelectionDescription>;
@@ -75,18 +74,17 @@ struct PawnType
 {
     void deserialize(const QJsonObject& jsObj, const QString& rootPath);
 
-    QString name;
     QPixmap icon;
-    QMap<QString, PtrFieldDescription> pFieldDescriptions;
+    QHash<QString, PtrFieldDescription> pFieldDescriptions;
 };
 
-using PawnTypes = QVector<PawnType>;
-using PtrPawnTypes = std::shared_ptr<PawnTypes>;
+using PawnTypes = QHash<QString, PawnType>;
 
-QDataStream& operator<<(QDataStream& stream, const PtrFieldDescription& fieldDescription);
-QDataStream& operator>>(QDataStream& stream, PtrFieldDescription& fieldDescription);
-QDataStream& operator<<(QDataStream& stream, const PawnType& objectType);
-QDataStream& operator>>(QDataStream& stream, PawnType& objectType);
+//TODO::is need?
+inline QDataStream& operator<<(QDataStream& stream, const PtrFieldDescription& fieldDescription);
+inline QDataStream& operator>>(QDataStream& stream, PtrFieldDescription& fieldDescription);
+inline QDataStream& operator<<(QDataStream& stream, const PawnType& objectType);
+inline QDataStream& operator>>(QDataStream& stream, PawnType& objectType);
 //QDataStream& operator<<(QDataStream& stream, const QVector<GObjectType>& objectTypes);
 //QDataStream& operator>>(QDataStream& stream, QVector<GObjectType>& objectTypes);
 

@@ -8,7 +8,7 @@ class ListModelObjectTypes : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    explicit ListModelObjectTypes(GameData* pData, QObject* perent = nullptr);
+    explicit ListModelObjectTypes(GameData& data, QObject* perent = nullptr);
     ListModelObjectTypes(const ListModelObjectTypes&) = delete;
     ListModelObjectTypes& operator=(const ListModelObjectTypes&) = delete;
 
@@ -19,14 +19,17 @@ public:
 //    //set new value
 //    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
     //is can edit
+    bool setRolesData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
-//    Qt::DropActions supportedDragActions() const override;
+    Qt::DropActions supportedDragActions() const override;
 //    Qt::DropActions supportedDropActions() const override;
+//    QStringList mimeTypes() const override;
+    QMimeData* mimeData(const QModelIndexList &indexes) const override;
 
 private:    
     GameRules* pRules;
-    PtrPawnTypes pPawnTypes;
+    PawnTypes* pPawnTypes;
 };
 
 #endif // LIST_MODEL_OBJECT_TYPES_H

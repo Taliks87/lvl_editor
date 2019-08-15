@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>280</height>
+    <height>302</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -28,10 +28,7 @@
   <property name="frameShape">
    <enum>QFrame::StyledPanel</enum>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
-   <property name="spacing">
-    <number>0</number>
-   </property>
+  <layout class="QGridLayout" name="gridLayout">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -44,8 +41,15 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <item>
-    <widget class="QTableWidget" name="tableWidget"/>
+   <item row="0" column="0">
+    <widget class="QTableView" name="tableView">
+     <property name="minimumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

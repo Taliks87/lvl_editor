@@ -13,7 +13,7 @@ class WidgetObjects : public QFrame
     Q_OBJECT
 
 public:
-    explicit WidgetObjects(GameData* pData, QWidget* parent = nullptr);
+    explicit WidgetObjects(GameData& data, QWidget* parent = nullptr);
     ~WidgetObjects();
 
 private:

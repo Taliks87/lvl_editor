@@ -11,51 +11,67 @@ struct IFieldValue
     virtual FieldType type() = 0;
 };
 
+using PtrIFieldValue = std::shared_ptr<IFieldValue>;
+
 struct FloatValue : public IFieldValue
 {
     virtual ~FloatValue() = default;
     FieldType type() { return FieldType::FLOAT; }
 
-    float m_value;
+    float value;
 };
+
+using PtrFloatValue = std::shared_ptr<FloatValue>;
 
 struct IntValue : public IFieldValue
 {
     virtual ~IntValue() = default;
     FieldType type() { return FieldType::INT; }
 
-    float m_value;
+    float value;
 };
+
+using PtrIntValue = std::shared_ptr<IntValue>;
 
 struct SelectionValue : public IFieldValue
 {
     virtual ~SelectionValue() = default;
     FieldType type() { return FieldType::SELECTION; }
 
-    unsigned m_id;
+    QString value;
 };
+
+using PtrSelectionValue = std::shared_ptr<SelectionValue>;
 
 using GPawnTypeId = unsigned;
 
 //Object
 struct GamePawn
-{
-    GPawnTypeId typeId;
-    QString name;
-    QPoint position;
-    QBitmap icon;
+{        
+    QString typeName;
+    QString name;    
+    QBitmap* icon;
         
-    QVector<IFieldValue*> fieldValues;
+    QVector<PtrIFieldValue> fieldValues;
 };
 
-using LevelData = QHash<QPoint, GamePawn>;
-using PtrLevelData = std::shared_ptr<LevelData>;
+inline uint qHash (const QPoint & key)
+{
+    return qHash (static_cast <qint64> (key.x () ) << 32 | key.y () );
+}
+using LevelMap = QVector<QVector<GamePawn>>;
+using LevelMaps = QHash<QString, LevelMap>;
 
 struct GameData
 {
     GameRules rules;
-    PtrPawnTypes pPawnTypes;
-    QMap<QString, PtrLevelData> levelMaps;
+    PawnTypes pawnTypes;
+    LevelMaps levelMaps;
 };
 
-
+//QDataStream& operator<<(QDataStream& stream, const LevelMap& levelMap);
+//QDataStream& operator>>(QDataStream& stream, LevelMap& levelMap);
+QDataStream& operator<<(QDataStream& stream, const GamePawn& gamePawn);
+QDataStream& operator>>(QDataStream& stream, GamePawn& gamePawn);
+QDataStream& operator<<(QDataStream& stream, const PtrIFieldValue& pFieldValue);
+QDataStream& operator>>(QDataStream& stream, PtrIFieldValue& pFieldValue);

@@ -25,26 +25,28 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        main.cpp \
         gui/dialog_enter_level.cpp \
         gui/editorwindow.cpp \
         gui/widget_map.cpp \
         gui/widget_objects.cpp \
-        gui/widget_object_types.cpp \
-        main.cpp \
+        gui/widget_object_types.cpp \        
         core/game_object.cpp \
         core/game_object_description.cpp \
-        model/list_model_object_types.cpp
+        model/list_model_object_types.cpp \
+        model/table_model_map.cpp
 
 HEADERS += \
         gui/dialog_enter_level.h \
         gui/editorwindow.h \
-        core/config.h \
-        core/game_object.h \
-        core/game_object_description.h \
         gui/widget_map.h \
         gui/widget_object_types.h \
         gui/widget_objects.h \
-        model/list_model_object_types.h
+        core/config.h \
+        core/game_object.h \
+        core/game_object_description.h \
+        model/list_model_object_types.h \
+        model/table_model_map.h
 
 FORMS += \
         gui/dialog_enter_level.ui \

@@ -3,11 +3,13 @@
 #include <QFont>
 #include <QPixmap>
 #include <QMap>
+#include <QHash>
+#include <QMimeData>
 
-ListModelObjectTypes::ListModelObjectTypes(GameData* pData, QObject* perent)
+ListModelObjectTypes::ListModelObjectTypes(GameData& data, QObject* perent)
     : QAbstractListModel (perent)
-    , pRules(&pData->rules)
-    , pPawnTypes(pData->pPawnTypes)
+    , pRules(&data.rules)
+    , pPawnTypes(&data.pawnTypes)
 {    
 }
 
@@ -20,7 +22,10 @@ int ListModelObjectTypes::rowCount(const QModelIndex& /*parent*/) const
 //retune value
 QVariant ListModelObjectTypes::data(const QModelIndex& index, int role) const
 {        
-    auto& name = pPawnTypes->at(index.row()).name;
+
+    PawnTypes::iterator it = pPawnTypes->begin();
+    it += index.row();
+    auto& name = it.key();
     if(!index.isValid())
         return QVariant();
     switch(role){
@@ -32,13 +37,13 @@ QVariant ListModelObjectTypes::data(const QModelIndex& index, int role) const
     case Qt::ToolTipRole:
         return name;
     case Qt::TextAlignmentRole:
-        return Qt::AlignHCenter;
+        return int(Qt::AlignLeft | Qt::AlignVCenter);
     case Qt::FontRole:
         return QFont("Times New Roman", 12, QFont::Bold);
     case Qt::BackgroundRole:
         return QBrush(Qt::gray);
     case Qt::DecorationRole:
-        return pPawnTypes->at(index.row()).icon;
+        return it->icon;
     default:
         return QVariant();
     }    
@@ -52,20 +57,46 @@ QVariant ListModelObjectTypes::data(const QModelIndex& index, int role) const
 //    return true;
 //}
 
+bool ListModelObjectTypes::setRolesData(const QModelIndex &/*index*/, const QVariant &/*value*/, int /*role*/)
+{
+    return true;
+}
+
 //is can edit
 Qt::ItemFlags ListModelObjectTypes::flags(const QModelIndex& index) const
 {
     if(!index.isValid())
         return Qt::NoItemFlags;
-    return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
 }
 
-//Qt::DropActions ListModelObjectTypes::supportedDragActions() const
+Qt::DropActions ListModelObjectTypes::supportedDragActions() const
+{
+    return Qt::CopyAction;
+}
+
+//QStringList ListModelObjectTypes::mimeTypes() const
 //{
-//    return Qt::CopyAction;
+//    QStringList types;
+//    types << "lvl_editor/pawn.type";
+//    return types;
 //}
 
-//Qt::DropActions ListModelObjectTypes::supportedDropActions() const
-//{
-//    return Qt::CopyAction;
-//}
+QMimeData* ListModelObjectTypes::mimeData(const QModelIndexList& indexes) const
+{
+    QMimeData* mimeData = new QMimeData();
+    QByteArray encodedData;
+
+    QDataStream stream(&encodedData, QIODevice::WriteOnly);
+
+    foreach (QModelIndex index, indexes) {
+        if (index.isValid()) {
+            QString text = data(index, Qt::DisplayRole).toString();
+            stream << text;
+        }
+    }
+
+    mimeData->setData("lvl_editor/pawn.type", encodedData);
+    return mimeData;
+}
+

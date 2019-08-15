@@ -24,12 +24,11 @@ EditorWindow::EditorWindow(QWidget *parent) :
     gameData(),
     levelEvent(LevelEvent::none),
     levelName("")
-{
-    gameData.pPawnTypes = PtrPawnTypes(new  PawnTypes());
+{    
     ui->setupUi(this);
-    widgetObjectTypes = new WidgetObjectTypes(&gameData, ui->centralWidget);
-    widgetMap = new WidgetMap(&gameData, ui->centralWidget);
-    widgetObjects = new WidgetObjects(&gameData, ui->centralWidget);
+    widgetObjectTypes = new WidgetObjectTypes(gameData, ui->centralWidget);
+    widgetMap = new WidgetMap(gameData, ui->centralWidget);
+    widgetObjects = new WidgetObjects(gameData, ui->centralWidget);
     ui->horizontalLayout->addWidget(widgetObjectTypes);
     ui->horizontalLayout->addWidget(widgetMap);
     ui->horizontalLayout->addWidget(widgetObjects);
@@ -59,11 +58,11 @@ void EditorWindow::showEvent( QShowEvent* event ) {
         //read object_rules
         gameData.rules.deserialize(jsNodeRules);
         // read object type
-        QJsonArray jsNodeObjTypes = jsonObj["pawn_types"].toArray();
-        int amountObjTypes = jsNodeObjTypes.size();
-        gameData.pPawnTypes->resize(amountObjTypes);
+        QJsonArray jsArrayObjTypes = jsonObj["pawn_types"].toArray();
+        int amountObjTypes = jsArrayObjTypes.size();
         for (int i = 0; i < amountObjTypes; ++i) {
-            (*gameData.pPawnTypes)[i].deserialize(jsNodeObjTypes[i].toObject(),rootPath);
+            QJsonObject jsObjType = jsArrayObjTypes[i].toObject();
+            gameData.pawnTypes[ jsObjType["name"].toString() ].deserialize(jsObjType,rootPath);
         }
         widgetObjectTypes->refreshData();
     } else {        
@@ -71,6 +70,9 @@ void EditorWindow::showEvent( QShowEvent* event ) {
     }
     configFile.close();
     fillObjectTypesView();
+
+    levelEvent = LevelEvent::load;
+    enter_level("test");
 }
 
 void EditorWindow::fillObjectTypesView()
@@ -80,7 +82,7 @@ void EditorWindow::fillObjectTypesView()
 
 void EditorWindow::enter_level(const QString& name)
 {
-    QString path = QDir::currentPath() + "/data/" + name;
+    QString path = QDir::currentPath() + "/data/" + name + ".lvl";
     QFile levelDataFile(path);
     QFileInfo checkFile(path);
     switch(levelEvent)
@@ -92,34 +94,50 @@ void EditorWindow::enter_level(const QString& name)
         } else {
             if(!levelDataFile.open(QFile::WriteOnly))
             {
-                QMessageBox::critical(this, "Error", "Can't open level");
-            } else {
-                levelName = name;
-//                    QDataStream  stream(&levelDataFile);
-//                    stream.setVersion(QDataStream::Qt_5_13);
-//                    if(stream.status() != QDataStream::Ok)
-//                    {
-//                        QMessageBox::critical(this, "Error", "Error create file");
-//                    }
+                QMessageBox::warning(this, "Can't create", "Can't create file");
+            } else {                
+                QDataStream  stream(&levelDataFile);
+                stream.setVersion(QDataStream::Qt_5_13);
+                GamePawn pawn;
+                QVector<GamePawn> pawnRow(gameData.rules.mapSize.y(), pawn);
+                LevelMap levelMap(QVector<QVector<GamePawn>>( gameData.rules.mapSize.x(), pawnRow));
+                stream << levelMap;
+                if(stream.status() != QDataStream::Ok)
+                {
+                    QMessageBox::critical(this, "Error", "Error create file");
+                } else {
+                    levelName = name;
+
+                    gameData.levelMaps[levelName] = levelMap;
+                    widgetMap->setLevel(levelName);
+                }
             }
         }
         break;
 
     case LevelEvent::load: // open level from disk
-        if(!levelDataFile.open(QFile::ReadOnly))
+        if(!checkFile.exists() || !checkFile.isFile())
         {
-            QMessageBox::warning(this, "Not found", "Level not found");
+            QMessageBox::warning(this, "Not found", "Lavel not found");
         } else {
-            QDataStream  stream(&levelDataFile);
-            stream.setVersion(QDataStream::Qt_5_13);
-//                QByteArray fileContents = levelDataFile.readAll();
-
-//                if( (stream.status() != QDataStream::Ok) )
-//                {
-//                    QMessageBox::critical(this, "Error", "Error read file");
-//                } else {
-                levelName = name;
-//                }
+            if(!levelDataFile.open(QFile::ReadOnly))
+            {
+                QMessageBox::warning(this, "Not found", "Level not found");
+            } else {
+                QDataStream  stream(&levelDataFile);
+                stream.setVersion(QDataStream::Qt_5_13);
+    //            QByteArray fileContents = levelDataFile.readAll();
+                LevelMap levelMap;
+                stream >> levelMap;
+                if( (stream.status() != QDataStream::Ok) )
+                {
+                    QMessageBox::critical(this, "Error", "Error read file");
+                } else {
+                    levelName = name;
+                    gameData.levelMaps[levelName] = levelMap;
+                    widgetMap->setLevel(levelName);
+                }
+            }
         }
         break;
     default:

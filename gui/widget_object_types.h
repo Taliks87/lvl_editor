@@ -14,7 +14,7 @@ class WidgetObjectTypes : public QFrame
     Q_OBJECT
 
 public:
-    explicit WidgetObjectTypes(GameData* pData, QWidget *parent = nullptr);
+    explicit WidgetObjectTypes(GameData& data, QWidget *parent = nullptr);
     void refreshData();
     ~WidgetObjectTypes();
 

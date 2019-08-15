@@ -16,18 +16,16 @@ void IntDescription::deserialize(const QJsonObject& jsObj)
 void SelectionDescription::deserialize(const QJsonObject& jsObj)
 {
     QJsonArray jsArrayVariantss = jsObj["variants"].toArray();
-    int amountVariants =  jsArrayVariantss.size();
-    variants.resize(amountVariants);
+    int amountVariants =  jsArrayVariantss.size();    
     for (int i = 0; i < amountVariants; ++i)
     {
-        variants[i] = jsArrayVariantss[i].toString();
+        variants.insert(jsArrayVariantss[i].toString());
     }
 }
 
 void PawnType::deserialize(const QJsonObject& jsObj, const QString& rootPath)
 {
-    qWarning() <<  jsObj;
-    name = jsObj["name"].toString();
+    qWarning() <<  jsObj;    
     //TODO: error
     icon = QPixmap(rootPath + jsObj["img"].toString());
     QJsonArray jsArrayProperties = jsObj["properties"].toArray();
@@ -125,13 +123,13 @@ QDataStream& operator>>(QDataStream& stream, PtrFieldDescription& pFieldDescript
 
 QDataStream& operator<<(QDataStream& stream, const PawnType& pawnType)
 {
-    stream << pawnType.name << pawnType.icon << pawnType.pFieldDescriptions;
+    stream << pawnType.icon << pawnType.pFieldDescriptions;
     return stream;
 }
 
 QDataStream& operator>>(QDataStream& stream, PawnType& pawnType)
 {
-    stream >> pawnType.name >> pawnType.icon >> pawnType.pFieldDescriptions;
+    stream >> pawnType.icon >> pawnType.pFieldDescriptions;
 
     return stream;
 }
