@@ -70,21 +70,23 @@ struct GameRules
     QHash<QString, int> mapAmountPawns;
 };
 
+using FieldDescriptions = QHash<QString, PtrFieldDescription>;
+
 struct PawnType
 {
     void deserialize(const QJsonObject& jsObj, const QString& rootPath);
 
     QPixmap icon;
-    QHash<QString, PtrFieldDescription> pFieldDescriptions;
+    FieldDescriptions fieldDescriptions;
 };
 
 using PawnTypes = QHash<QString, PawnType>;
 
 //TODO::is need?
-inline QDataStream& operator<<(QDataStream& stream, const PtrFieldDescription& fieldDescription);
-inline QDataStream& operator>>(QDataStream& stream, PtrFieldDescription& fieldDescription);
-inline QDataStream& operator<<(QDataStream& stream, const PawnType& objectType);
-inline QDataStream& operator>>(QDataStream& stream, PawnType& objectType);
+//inline QDataStream& operator<<(QDataStream& stream, const PtrFieldDescription& fieldDescription);
+//inline QDataStream& operator>>(QDataStream& stream, PtrFieldDescription& fieldDescription);
+//inline QDataStream& operator<<(QDataStream& stream, const PawnType& objectType);
+//inline QDataStream& operator>>(QDataStream& stream, PawnType& objectType);
 //QDataStream& operator<<(QDataStream& stream, const QVector<GObjectType>& objectTypes);
 //QDataStream& operator>>(QDataStream& stream, QVector<GObjectType>& objectTypes);
 

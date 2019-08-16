@@ -13,7 +13,12 @@ WidgetObjectTypes::WidgetObjectTypes(GameData& data, QWidget *parent) :
     list->setDragEnabled(true);
     list->setAcceptDrops(true);
     list->setDropIndicatorShown(true);
-    list->setModel(&listModelObjectTypes);
+    list->setModel(&listModelObjectTypes);    
+}
+
+WidgetObjectTypes::~WidgetObjectTypes()
+{
+    delete ui;    
 }
 
 void WidgetObjectTypes::refreshData()
@@ -21,7 +26,8 @@ void WidgetObjectTypes::refreshData()
     ui->listView->reset();
 }
 
-WidgetObjectTypes::~WidgetObjectTypes()
+
+void WidgetObjectTypes::setLevel(const QString& levelName)
 {
-    delete ui;    
+    listModelObjectTypes.refreshLevelData(levelName);
 }

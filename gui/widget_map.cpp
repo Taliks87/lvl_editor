@@ -1,3 +1,4 @@
+#include <QSizePolicy>
 #include "widget_map.h"
 #include "ui_widget_map.h"
 
@@ -12,7 +13,7 @@ WidgetMap::WidgetMap(GameData& data, QWidget *parent) :
     table->setDragEnabled(true);
     table->setAcceptDrops(true);
     table->setDropIndicatorShown(true);
-    table->setModel(&tableModelMap);
+    table->setModel(&tableModelMap);    
 }
 
 WidgetMap::~WidgetMap()
@@ -22,5 +23,5 @@ WidgetMap::~WidgetMap()
 
 void WidgetMap::setLevel(const QString& levelName)
 {
-    tableModelMap.refreshLevelMap(levelName);
+    tableModelMap.refreshLevelData(levelName);
 }

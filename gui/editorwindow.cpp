@@ -108,8 +108,9 @@ void EditorWindow::enter_level(const QString& name)
                 } else {
                     levelName = name;
 
-                    gameData.levelMaps[levelName] = levelMap;
+                    gameData.levelsData[levelName].map = levelMap;
                     widgetMap->setLevel(levelName);
+                    widgetObjectTypes->setLevel(levelName);
                 }
             }
         }
@@ -134,8 +135,9 @@ void EditorWindow::enter_level(const QString& name)
                     QMessageBox::critical(this, "Error", "Error read file");
                 } else {
                     levelName = name;
-                    gameData.levelMaps[levelName] = levelMap;
+                    gameData.levelsData[levelName].map = levelMap;
                     widgetMap->setLevel(levelName);
+                    widgetObjectTypes->setLevel(levelName);
                 }
             }
         }

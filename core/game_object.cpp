@@ -1,5 +1,13 @@
 #include "core/game_object.h"
 
+IFieldValue::~IFieldValue() = default;
+
+FieldType FloatValue::type() { return FieldType::FLOAT; }
+
+FieldType IntValue::type() { return FieldType::INT; }
+
+FieldType SelectionValue::type() { return FieldType::SELECTION; }
+
 //QDataStream& operator<<(QDataStream& stream, const LevelMap& levelMap)
 //{
 //    for(int col = 0; col < levelMap.size(); ++col)

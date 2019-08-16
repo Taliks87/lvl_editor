@@ -8,9 +8,16 @@
 
 ListModelObjectTypes::ListModelObjectTypes(GameData& data, QObject* perent)
     : QAbstractListModel (perent)
+    , pGameData(&data)
     , pRules(&data.rules)
+    , pLevelStutistic(nullptr)
     , pPawnTypes(&data.pawnTypes)
 {    
+}
+
+void ListModelObjectTypes::refreshLevelData(const QString& levelName)
+{
+    pLevelStutistic = &pGameData->levelsData[levelName].statistic;
 }
 
 //amount elements
@@ -30,7 +37,6 @@ QVariant ListModelObjectTypes::data(const QModelIndex& index, int role) const
         return QVariant();
     switch(role){
     case Qt::DisplayRole:
-//    case Qt::EditRole:
         return name;
     case Qt::SizeHintRole:
         return QSize(0, 25);
@@ -41,9 +47,11 @@ QVariant ListModelObjectTypes::data(const QModelIndex& index, int role) const
     case Qt::FontRole:
         return QFont("Times New Roman", 12, QFont::Bold);
     case Qt::BackgroundRole:
-        return QBrush(Qt::gray);
+        if(isPawnLimit(index))
+            return QBrush(Qt::gray);
+        return QBrush(Qt::white);
     case Qt::DecorationRole:
-        return it->icon;
+        return it->icon.scaled(24,24);
     default:
         return QVariant();
     }    
@@ -64,14 +72,16 @@ bool ListModelObjectTypes::setRolesData(const QModelIndex &/*index*/, const QVar
 
 //is can edit
 Qt::ItemFlags ListModelObjectTypes::flags(const QModelIndex& index) const
-{
+{    
     if(!index.isValid())
         return Qt::NoItemFlags;
+    if(isPawnLimit(index))
+        return Qt::ItemIsEnabled;
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
 }
 
 Qt::DropActions ListModelObjectTypes::supportedDragActions() const
-{
+{    
     return Qt::CopyAction;
 }
 
@@ -92,11 +102,25 @@ QMimeData* ListModelObjectTypes::mimeData(const QModelIndexList& indexes) const
     foreach (QModelIndex index, indexes) {
         if (index.isValid()) {
             QString text = data(index, Qt::DisplayRole).toString();
-            stream << text;
+            stream << text;            
         }
     }
 
     mimeData->setData("lvl_editor/pawn.type", encodedData);
     return mimeData;
+}
+
+bool ListModelObjectTypes::isPawnLimit(const QModelIndex& index) const
+{
+    if(pLevelStutistic)
+    {
+        PawnTypes::iterator itPawnTypes = pPawnTypes->begin();
+        itPawnTypes += index.row();
+        auto& name = itPawnTypes.key();
+        auto it = pRules->mapAmountPawns.find(name);
+
+        return (it != pRules->mapAmountPawns.end()) && ((*pLevelStutistic)[name] >= pRules->mapAmountPawns[name]);
+    }
+    return true;
 }
 

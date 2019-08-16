@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QMimeData>
 #include <QPoint>
+#include <QColor>
 
 TableModelMap::TableModelMap(GameData& data, QObject* perent)
     : QAbstractTableModel (perent)
@@ -12,12 +13,14 @@ TableModelMap::TableModelMap(GameData& data, QObject* perent)
     , pRules(&data.rules)
     , pPawnTypes(&data.pawnTypes)
     , pLevelMaps(nullptr)
-{
+    , mimeList({"lvl_editor/pawn.type", "lvl_editor/pawn.onMap"})
+{    
 }
 
-void TableModelMap::refreshLevelMap(const QString& levelName)
+void TableModelMap::refreshLevelData(const QString& levelName)
 {
-    pLevelMaps = &pGameData->levelMaps[levelName];
+    pLevelMaps = &pGameData->levelsData[levelName].map;
+    pLevelStutistic = &pGameData->levelsData[levelName].statistic;
 }
 
 int TableModelMap::rowCount(const QModelIndex& /*parent*/) const
@@ -47,28 +50,18 @@ QVariant TableModelMap::data(const QModelIndex& index, int role) const
             if(!gamePawn.typeName.isEmpty())
             {
                 switch(role){
-                    case Qt::DisplayRole:
-                //    case Qt::EditRole:
-                        return gamePawn.name;
-                    case Qt::SizeHintRole:
-                        return QSize(0, 25);
                     case Qt::ToolTipRole:
-                        return gamePawn.name;
-                    case Qt::TextAlignmentRole:
-                        return Qt::AlignHCenter;
-                    case Qt::FontRole:
-                        return QFont("Times New Roman", 12, QFont::Bold);
+                        return gamePawn.name;                                        
                     case Qt::DecorationRole:
                         if(gamePawn.icon)
-                        return *gamePawn.icon;
+                            return gamePawn.icon->scaled(32,32);
+                        break;
+                    case Qt::BackgroundRole:
+                        return QBrush(QColor(50,50,50));
                 }
             } else {
                 //empty pawn
                 switch(role){
-                    case Qt::DisplayRole:
-                        return "";
-                    case Qt::TextColorRole:
-                        return QBrush(Qt::white);
                     case Qt::BackgroundRole:
                         return QBrush(Qt::black);
                 }
@@ -77,7 +70,7 @@ QVariant TableModelMap::data(const QModelIndex& index, int role) const
     }
     switch(role){
         case Qt::BackgroundRole:
-            return QBrush(Qt::gray);
+            return QBrush(Qt::gray);        
     }
     return QVariant();
 }
@@ -95,12 +88,12 @@ Qt::ItemFlags TableModelMap::flags(const QModelIndex& index) const
         int row =  index.row();
         if((pLevelMaps->size() > col) && ((*pLevelMaps)[0].size() > row))
         {
-            GamePawn& gamePawn = (*pLevelMaps)[col][row];
+            GamePawn& gamePawn = (*pLevelMaps)[col][row];            
             if(!gamePawn.typeName.isEmpty())
             {
                 return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
             } else {
-                return Qt::ItemIsEnabled | Qt::ItemIsSelectable |  Qt::ItemIsDropEnabled;
+                return Qt::ItemIsEnabled | Qt::ItemIsDropEnabled;
             }
         }
     }
@@ -113,33 +106,111 @@ Qt::DropActions TableModelMap::supportedDragActions() const
 }
 
 QStringList TableModelMap::mimeTypes() const
+{        
+    return mimeList;
+}
+
+QMimeData* TableModelMap::mimeData(const QModelIndexList& indexes) const
 {
-    QStringList types;
-    types << "lvl_editor/pawn.type";
-    return types;
+    QMimeData* mimeData = new QMimeData();
+    QByteArray encodedData;
+
+    QDataStream stream(&encodedData, QIODevice::WriteOnly);
+
+    foreach (QModelIndex index, indexes) {
+        if (index.isValid()) {
+//            QString text = QString::number(index.row()) + QString::number(index.column());
+            stream << index.column() << index.row();
+        }
+    }
+
+    mimeData->setData("lvl_editor/pawn.onMap", encodedData);
+    return mimeData;
+}
+
+bool TableModelMap::canDropMimeData(const QMimeData* /*data*/, Qt::DropAction /*action*/, int /*row*/, int /*column*/, const QModelIndex &parent) const
+{    
+    return ( parent.isValid() && (*pLevelMaps)[parent.column()][parent.row()].typeName.isEmpty() );
 }
 
 bool TableModelMap::dropMimeData(const QMimeData *data,
-    Qt::DropAction action, int row, int column, const QModelIndex &parent)
+    Qt::DropAction action, int /*row*/, int /*column*/, const QModelIndex &parent)
 {
+    if (!parent.isValid())
+        return false;
     if (action == Qt::IgnoreAction)
         return true;
-    if (!data->hasFormat("lvl_editor/pawn.type"))
-        return false;
 
-    (*pLevelMaps)[column][row] = GamePawn();
+    //drop pawns type
+    if (data->hasFormat(mimeList[0]))
+    {
+        QByteArray encodedData = data->data(mimeList[0]);
+        QDataStream stream(&encodedData, QIODevice::ReadOnly);
 
-    QByteArray encodedData = data->data("lvl_editor/pawn.type");
-    QDataStream stream(&encodedData, QIODevice::ReadOnly);
-    QStringList newItems;
-    int rows = 0;
-
-    while (!stream.atEnd()) {
-        QString text;
-        stream >> text;
-        newItems << text;
-        ++rows;
+        QString typeName;
+        stream >> typeName;
+        PawnTypes::const_iterator itPawnTypes = pPawnTypes->find(typeName);
+        if(itPawnTypes != pPawnTypes->end())
+        {
+            GamePawn& newPown = ((*pLevelMaps)[parent.column()][parent.row()] = GamePawn());
+            newPown.typeName = typeName;
+            auto it = pLevelStutistic->find(typeName);
+            if( it == pLevelStutistic->end() )
+            {
+                it = pLevelStutistic->insert(typeName,0);
+            } else {
+                ++(it.value());
+            }
+            newPown.name = QString("pawn_") + typeName + QString::number(it.value());
+            newPown.icon = &(itPawnTypes->icon);
+            for(auto itDescription = itPawnTypes->fieldDescriptions.begin(); itDescription != itPawnTypes->fieldDescriptions.end(); ++itDescription)
+            {
+                auto& pDescription = itDescription.value();
+                switch (pDescription->type())
+                {
+                    case FieldType::INT: {
+                        PtrIntDescription pInt = std::dynamic_pointer_cast<IntDescription>(pDescription);
+                        newPown.fieldValues[itDescription.key()] = PtrIFieldValue(new IntValue(pInt->from));
+                        break;
+                    }
+                    case FieldType::FLOAT: {
+                        PtrFloatDescription pFloat = std::dynamic_pointer_cast<FloatDescription>(pDescription);
+                        newPown.fieldValues[itDescription.key()] = PtrIFieldValue(new FloatValue(pFloat->from));
+                        break;
+                    }
+                case FieldType::SELECTION: {
+                        PtrSelectionDescription pSelection = std::dynamic_pointer_cast<SelectionDescription>(pDescription);
+                        newPown.fieldValues[itDescription.key()] = PtrIFieldValue(new SelectionValue(*pSelection->variants.begin()));
+                        break;
+                    }
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
+
+    //drop pawn, move pawn on map
+    if (data->hasFormat(mimeList[1])) {
+        QByteArray encodedData = data->data(mimeList[1]);
+        QDataStream stream(&encodedData, QIODevice::ReadOnly);
+
+        int columnMovedPawn;
+        int rowMovedPawn;
+        stream >> columnMovedPawn >> rowMovedPawn;
+        GamePawn& movedPawn = (*pLevelMaps)[columnMovedPawn][rowMovedPawn];
+//        if(gamePawnOnArea.name.isEmpty())
+//        {
+
+        GamePawn& pawnOnArea = ((*pLevelMaps)[parent.column()][parent.row()] = GamePawn());
+        std::swap(movedPawn, pawnOnArea);
+
+//        } else {
+//            return false;
+//        }
+    }
+
     return true;
 }
 

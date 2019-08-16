@@ -7,7 +7,7 @@
 
 struct IFieldValue
 {
-    virtual ~IFieldValue() = default;
+    virtual ~IFieldValue();
     virtual FieldType type() = 0;
 };
 
@@ -15,8 +15,10 @@ using PtrIFieldValue = std::shared_ptr<IFieldValue>;
 
 struct FloatValue : public IFieldValue
 {
-    virtual ~FloatValue() = default;
-    FieldType type() { return FieldType::FLOAT; }
+    FloatValue() = default;
+    explicit FloatValue(float value_) : value(value_) {}
+    ~FloatValue() override = default;
+    FieldType type() override;
 
     float value;
 };
@@ -25,18 +27,22 @@ using PtrFloatValue = std::shared_ptr<FloatValue>;
 
 struct IntValue : public IFieldValue
 {
-    virtual ~IntValue() = default;
-    FieldType type() { return FieldType::INT; }
+    IntValue() = default;
+    explicit IntValue(int value_) : value(value_) {}
+    ~IntValue() override = default;
+    FieldType type() override;
 
-    float value;
+    int value;
 };
 
 using PtrIntValue = std::shared_ptr<IntValue>;
 
 struct SelectionValue : public IFieldValue
 {
-    virtual ~SelectionValue() = default;
-    FieldType type() { return FieldType::SELECTION; }
+    SelectionValue() = default;
+    explicit SelectionValue(const QString& value_) : value(value_) {}
+    ~SelectionValue() override = default;
+    FieldType type() override;
 
     QString value;
 };
@@ -50,23 +56,32 @@ struct GamePawn
 {        
     QString typeName;
     QString name;    
-    QBitmap* icon;
+    const QPixmap* icon;
         
-    QVector<PtrIFieldValue> fieldValues;
+    QHash<QString, PtrIFieldValue> fieldValues;
 };
 
-inline uint qHash (const QPoint & key)
-{
-    return qHash (static_cast <qint64> (key.x () ) << 32 | key.y () );
-}
+//inline uint qHash (const QPoint & key)
+//{
+//    return qHash (static_cast <qint64> (key.x () ) << 32 | key.y () );
+//}
+
+using LevelStatistic = QHash<QString, int>;
 using LevelMap = QVector<QVector<GamePawn>>;
-using LevelMaps = QHash<QString, LevelMap>;
+
+struct LevelData
+{
+    LevelStatistic statistic;
+    LevelMap map;
+};
+
+using LevelsData = QHash<QString, LevelData>;
 
 struct GameData
 {
     GameRules rules;
     PawnTypes pawnTypes;
-    LevelMaps levelMaps;
+    LevelsData levelsData;
 };
 
 //QDataStream& operator<<(QDataStream& stream, const LevelMap& levelMap);
