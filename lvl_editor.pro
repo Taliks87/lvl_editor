@@ -30,11 +30,12 @@ SOURCES += \
         gui/editorwindow.cpp \
         gui/widget_map.cpp \
         gui/widget_objects.cpp \
-        gui/widget_object_types.cpp \        
+        gui/widget_object_types.cpp \
         core/game_object.cpp \
         core/game_object_description.cpp \
         model/list_model_object_types.cpp \
-        model/table_model_map.cpp
+        model/table_model_map.cpp \
+        model/tree_model_pawn.cpp
 
 HEADERS += \
         gui/dialog_enter_level.h \
@@ -46,7 +47,8 @@ HEADERS += \
         core/game_object.h \
         core/game_object_description.h \
         model/list_model_object_types.h \
-        model/table_model_map.h
+        model/table_model_map.h \
+        model/tree_model_pawn.h
 
 FORMS += \
         gui/dialog_enter_level.ui \

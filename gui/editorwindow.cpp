@@ -33,6 +33,7 @@ EditorWindow::EditorWindow(QWidget *parent) :
     ui->horizontalLayout->addWidget(widgetMap);
     ui->horizontalLayout->addWidget(widgetObjects);
     connect(dialogLevelName, SIGNAL(enter_name(QString)), this, SLOT(enter_level(QString)));    
+    connect(widgetMap, SIGNAL(select_pawn(const QModelIndex&)), widgetObjects, SLOT(select_pawn(const QModelIndex&)));
 }
 
 EditorWindow::~EditorWindow()
@@ -109,6 +110,7 @@ void EditorWindow::enter_level(const QString& name)
                     levelName = name;
 
                     gameData.levelsData[levelName].map = levelMap;
+                    widgetObjects->setLevel(levelName);
                     widgetMap->setLevel(levelName);
                     widgetObjectTypes->setLevel(levelName);
                 }
@@ -136,6 +138,7 @@ void EditorWindow::enter_level(const QString& name)
                 } else {
                     levelName = name;
                     gameData.levelsData[levelName].map = levelMap;
+                    widgetObjects->setLevel(levelName);
                     widgetMap->setLevel(levelName);
                     widgetObjectTypes->setLevel(levelName);
                 }

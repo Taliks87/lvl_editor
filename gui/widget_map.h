@@ -15,13 +15,22 @@ class WidgetMap : public QFrame
 
 public:
     explicit WidgetMap(GameData& data, QWidget *parent = nullptr);
+    WidgetMap(const WidgetMap&) = delete;
+    WidgetMap& operator=(const WidgetMap&) = delete;
     ~WidgetMap();
 
     void setLevel(const QString& levelName);
+    void dropItemOnMap(int colum, int row);
+
+signals:
+    void select_pawn(const QModelIndex& index);
+private slots:
+    void on_tableView_clicked(const QModelIndex &index);
 
 private:
-    Ui::WidgetMap *ui;
+    Ui::WidgetMap* ui;
     TableModelMap tableModelMap;
+    ItemDelegateMap* pDelegateMap;
 };
 
 #endif // WIDGET_MAP_H

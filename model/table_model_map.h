@@ -2,6 +2,8 @@
 #define TABLE_MODEL_MAP_H
 
 #include <QAbstractTableModel>
+#include <QEvent>
+#include <QMouseEvent>
 #include "core/game_object.h"
 
 class TableModelMap : public QAbstractTableModel
@@ -32,6 +34,34 @@ private:
     LevelMap* pLevelMaps;
     LevelStatistic* pLevelStutistic;
     const QStringList mimeList;
+};
+
+#include <QStyledItemDelegate>
+
+class ItemDelegateMap: public QStyledItemDelegate{
+public:
+    using QStyledItemDelegate::QStyledItemDelegate;
+protected:
+    void initStyleOption(QStyleOptionViewItem *option, const QModelIndex &index) const override
+    {
+        QStyledItemDelegate::initStyleOption(option, index);
+        option->decorationPosition = QStyleOptionViewItem::Top;
+    }
+
+    bool editorEvent( QEvent * event, QAbstractItemModel * model, const QStyleOptionViewItem & option, const QModelIndex & index ) override
+    {
+        if(event->type() == QEvent::MouseButtonPress)
+        {
+            QMouseEvent* me = dynamic_cast<QMouseEvent*>(event);
+            if( me->button() == Qt::MidButton )
+            {
+                QStyleOptionViewItem opt = option;
+                model->setRolesData(index, QVariant());
+            }
+        }
+
+        return QStyledItemDelegate::editorEvent(event, model, option, index);
+    }
 };
 
 #endif // TABLE_MODEL_MAP_H

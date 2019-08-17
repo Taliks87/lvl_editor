@@ -45,6 +45,8 @@ QVariant ListModelObjectTypes::data(const QModelIndex& index, int role) const
     case Qt::TextAlignmentRole:
         return int(Qt::AlignLeft | Qt::AlignVCenter);
     case Qt::FontRole:
+        if(isPawnLimit(index))
+            return QFont("Times New Roman", 12, QFont::Thin);
         return QFont("Times New Roman", 12, QFont::Bold);
     case Qt::BackgroundRole:
         if(isPawnLimit(index))
@@ -67,7 +69,7 @@ QVariant ListModelObjectTypes::data(const QModelIndex& index, int role) const
 
 bool ListModelObjectTypes::setRolesData(const QModelIndex &/*index*/, const QVariant &/*value*/, int /*role*/)
 {
-    return true;
+    return false;
 }
 
 //is can edit

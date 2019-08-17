@@ -13,6 +13,8 @@ class DialogEnterLevel : public QDialog
 
 public:
     explicit DialogEnterLevel(QWidget *parent = nullptr);
+    DialogEnterLevel(const DialogEnterLevel&) = delete;
+    DialogEnterLevel& operator=(const DialogEnterLevel&) = delete;
     void setup_window(const QString& lableText);
     ~DialogEnterLevel();
 

@@ -1,4 +1,5 @@
 #include "model/table_model_map.h"
+#include "gui/widget_map.h"
 #include <QBrush>
 #include <QFont>
 #include <QPixmap>
@@ -6,6 +7,9 @@
 #include <QMimeData>
 #include <QPoint>
 #include <QColor>
+#include <QDropEvent>
+#include <QItemSelection>
+#include <QDebug>
 
 TableModelMap::TableModelMap(GameData& data, QObject* perent)
     : QAbstractTableModel (perent)
@@ -75,9 +79,25 @@ QVariant TableModelMap::data(const QModelIndex& index, int role) const
     return QVariant();
 }
 
-bool TableModelMap::setRolesData(const QModelIndex &/*index*/, const QVariant &/*value*/, int /*role*/)
-{
-    return true;
+bool TableModelMap::setRolesData(const QModelIndex& index, const QVariant &value, int role)
+{    
+    if (role == Qt::EditRole) {
+        if(checkIndex(index) && value.isNull())
+        {
+            GamePawn& gamePawn = (*pLevelMaps)[index.column()][index.row()];
+            auto it = pLevelStutistic->find(gamePawn.typeName);
+            if( it != pLevelStutistic->end() )
+            {
+                --(it.value());
+            } else {
+                qWarning() << "Type name not found" << gamePawn.typeName;
+            }
+            (gamePawn = GamePawn());
+        }
+//        emit editCompleted(result);
+        return true;
+    }
+    return false;
 }
 
 Qt::ItemFlags TableModelMap::flags(const QModelIndex& index) const
@@ -88,12 +108,12 @@ Qt::ItemFlags TableModelMap::flags(const QModelIndex& index) const
         int row =  index.row();
         if((pLevelMaps->size() > col) && ((*pLevelMaps)[0].size() > row))
         {
-            GamePawn& gamePawn = (*pLevelMaps)[col][row];            
+            GamePawn& gamePawn = (*pLevelMaps)[col][row];
             if(!gamePawn.typeName.isEmpty())
             {
                 return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
             } else {
-                return Qt::ItemIsEnabled | Qt::ItemIsDropEnabled;
+                return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDropEnabled;
             }
         }
     }
@@ -119,12 +139,13 @@ QMimeData* TableModelMap::mimeData(const QModelIndexList& indexes) const
 
     foreach (QModelIndex index, indexes) {
         if (index.isValid()) {
-//            QString text = QString::number(index.row()) + QString::number(index.column());
+//            ((*pLevelMaps)[index.column()][index.row()] = GamePawn());
             stream << index.column() << index.row();
         }
     }
 
     mimeData->setData("lvl_editor/pawn.onMap", encodedData);
+
     return mimeData;
 }
 
@@ -134,13 +155,14 @@ bool TableModelMap::canDropMimeData(const QMimeData* /*data*/, Qt::DropAction /*
 }
 
 bool TableModelMap::dropMimeData(const QMimeData *data,
-    Qt::DropAction action, int /*row*/, int /*column*/, const QModelIndex &parent)
+    Qt::DropAction action, int /*row*/, int /*column*/, const QModelIndex &parentIndex)
 {
-    if (!parent.isValid())
+    if (!parentIndex.isValid())
         return false;
     if (action == Qt::IgnoreAction)
         return true;
-
+    int perentColumn = parentIndex.column();
+    int perentRow = parentIndex.row();
     //drop pawns type
     if (data->hasFormat(mimeList[0]))
     {
@@ -152,7 +174,7 @@ bool TableModelMap::dropMimeData(const QMimeData *data,
         PawnTypes::const_iterator itPawnTypes = pPawnTypes->find(typeName);
         if(itPawnTypes != pPawnTypes->end())
         {
-            GamePawn& newPown = ((*pLevelMaps)[parent.column()][parent.row()] = GamePawn());
+            GamePawn& newPown = ((*pLevelMaps)[perentColumn][perentRow] = GamePawn());
             newPown.typeName = typeName;
             auto it = pLevelStutistic->find(typeName);
             if( it == pLevelStutistic->end() )
@@ -161,7 +183,7 @@ bool TableModelMap::dropMimeData(const QMimeData *data,
             } else {
                 ++(it.value());
             }
-            newPown.name = QString("pawn_") + typeName + QString::number(it.value());
+            newPown.name = QString("pawn_") + typeName + QString("_") + QString::number(it.value());
             newPown.icon = &(itPawnTypes->icon);
             for(auto itDescription = itPawnTypes->fieldDescriptions.begin(); itDescription != itPawnTypes->fieldDescriptions.end(); ++itDescription)
             {
@@ -184,14 +206,13 @@ bool TableModelMap::dropMimeData(const QMimeData *data,
                         break;
                     }
                 }
-            }
-            return true;
+            }            
         } else {
             return false;
         }
     }
 
-    //drop pawn, move pawn on map
+    //drop pawn, move pawn on a map
     if (data->hasFormat(mimeList[1])) {
         QByteArray encodedData = data->data(mimeList[1]);
         QDataStream stream(&encodedData, QIODevice::ReadOnly);
@@ -200,16 +221,13 @@ bool TableModelMap::dropMimeData(const QMimeData *data,
         int rowMovedPawn;
         stream >> columnMovedPawn >> rowMovedPawn;
         GamePawn& movedPawn = (*pLevelMaps)[columnMovedPawn][rowMovedPawn];
-//        if(gamePawnOnArea.name.isEmpty())
-//        {
-
-        GamePawn& pawnOnArea = ((*pLevelMaps)[parent.column()][parent.row()] = GamePawn());
+        GamePawn& pawnOnArea = ((*pLevelMaps)[perentColumn][perentRow] = GamePawn());
         std::swap(movedPawn, pawnOnArea);
 
-//        } else {
-//            return false;
-//        }
-    }
+    }    
+    WidgetMap* parentObj = dynamic_cast<WidgetMap*>(parent());
+    if(parentObj)
+        parentObj->dropItemOnMap(perentColumn, perentRow);
 
     return true;
 }

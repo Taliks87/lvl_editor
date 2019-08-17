@@ -14,14 +14,16 @@ class WidgetObjectTypes : public QFrame
     Q_OBJECT
 
 public:
-    explicit WidgetObjectTypes(GameData& data, QWidget *parent = nullptr);   
+    explicit WidgetObjectTypes(GameData& data, QWidget *parent = nullptr);
+    WidgetObjectTypes(const WidgetObjectTypes&) = delete;
+    WidgetObjectTypes& operator=(const WidgetObjectTypes&) = delete;
     ~WidgetObjectTypes();
 
     void refreshData();
     void setLevel(const QString& levelName);
 
 private:
-    Ui::WidgetObjectTypes *ui;
+    Ui::WidgetObjectTypes* ui;
     ListModelObjectTypes listModelObjectTypes;
 };
 

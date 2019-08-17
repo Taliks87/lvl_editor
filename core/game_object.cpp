@@ -97,3 +97,5 @@ QDataStream& operator>>(QDataStream& stream, PtrIFieldValue& pFieldValue)
 
     return stream;
 }
+
+

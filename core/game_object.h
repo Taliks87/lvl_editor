@@ -50,7 +50,7 @@ struct SelectionValue : public IFieldValue
 using PtrSelectionValue = std::shared_ptr<SelectionValue>;
 
 using GPawnTypeId = unsigned;
-
+using FieldValues = QHash<QString, PtrIFieldValue>;
 //Object
 struct GamePawn
 {        
@@ -58,7 +58,7 @@ struct GamePawn
     QString name;    
     const QPixmap* icon;
         
-    QHash<QString, PtrIFieldValue> fieldValues;
+    FieldValues fieldValues;
 };
 
 //inline uint qHash (const QPoint & key)

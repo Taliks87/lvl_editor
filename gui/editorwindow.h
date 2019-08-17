@@ -26,6 +26,8 @@ class EditorWindow : public QMainWindow
     Q_OBJECT
 public:
     explicit EditorWindow(QWidget* parent = nullptr);
+    EditorWindow(const EditorWindow&) = delete;
+    EditorWindow& operator=(const EditorWindow&) = delete;
     ~EditorWindow() override;
 
 protected:
