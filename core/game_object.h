@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/game_object_description.h"
+#include <QMap>
 #include <QHash>
 #include <QPoint>
 #include <QBitmap>
@@ -50,11 +51,11 @@ struct SelectionValue : public IFieldValue
 using PtrSelectionValue = std::shared_ptr<SelectionValue>;
 
 using GPawnTypeId = unsigned;
-using FieldValues = QHash<QString, PtrIFieldValue>;
+using FieldValues = QMap<QString, PtrIFieldValue>;
 //Object
 struct GamePawn
 {        
-    QString typeName;
+    QString typeName;    
     QString name;    
     const QPixmap* icon;
         

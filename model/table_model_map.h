@@ -10,6 +10,7 @@ class TableModelMap : public QAbstractTableModel
 {
     Q_OBJECT
 public:
+
     explicit TableModelMap(GameData& data, QObject* perent = nullptr);
     TableModelMap(const TableModelMap&) = delete;
     TableModelMap& operator=(const TableModelMap&) = delete;
@@ -26,6 +27,8 @@ public:
     QMimeData* mimeData(const QModelIndexList& indexes) const override;
     bool canDropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
     bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+signals:
+    void change_completed(const QModelIndex& index);
 
 private:
     GameData* pGameData;

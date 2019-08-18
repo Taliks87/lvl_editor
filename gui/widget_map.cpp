@@ -19,6 +19,7 @@ WidgetMap::WidgetMap(GameData& data, QWidget *parent) :
     table->setModel(&tableModelMap);
     pDelegateMap = new ItemDelegateMap(table);
     table->setItemDelegate(pDelegateMap);
+    connect(&tableModelMap, SIGNAL(change_completed(const QModelIndex&)), this, SLOT(on_tableView_clicked(const QModelIndex&)));
 }
 
 WidgetMap::~WidgetMap()
@@ -34,18 +35,14 @@ void WidgetMap::setLevel(const QString& levelName)
 
 void WidgetMap::on_tableView_clicked(const QModelIndex& index)
 {
+    QItemSelectionModel* selectionModel = ui->tableView->selectionModel();
+    QItemSelection selection(index, index);
+    selectionModel->select(selection, QItemSelectionModel::ClearAndSelect);
+
     if(index.isValid())
     {
         emit select_pawn(index);
     }
 }
 
-void WidgetMap::dropItemOnMap(int column, int row)
-{
-    QItemSelectionModel* selectionModel = ui->tableView->selectionModel();
-    QModelIndex selectIndex = tableModelMap.index(row, column, QModelIndex());
-    QItemSelection selection(selectIndex, selectIndex);
-    selectionModel->select(selection, QItemSelectionModel::ClearAndSelect);
 
-    on_tableView_clicked(selectIndex);
-}

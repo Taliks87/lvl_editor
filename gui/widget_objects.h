@@ -19,8 +19,9 @@ public:
 
     void setLevel(const QString& levelName);
 private:
-    Ui::WidgetObjects *ui;    
+    Ui::WidgetObjects* ui;
     TreeModelPawn treeModelPawn;
+    std::unique_ptr<ItemDelegatePawn> pDelegatePawn;
 private slots:
     void select_pawn(const QModelIndex& index);
 };

@@ -24,8 +24,7 @@ void SelectionDescription::deserialize(const QJsonObject& jsObj)
 }
 
 void PawnType::deserialize(const QJsonObject& jsObj, const QString& rootPath)
-{
-    qWarning() <<  jsObj;
+{    
     //TODO: error
     icon = QPixmap(rootPath + jsObj["img"].toString());
     QJsonArray jsArrayProperties = jsObj["properties"].toArray();

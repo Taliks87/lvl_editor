@@ -1,5 +1,6 @@
 #include "widget_objects.h"
 #include "ui_widget_objects.h"
+#include <memory>
 
 WidgetObjects::WidgetObjects(GameData& data, QWidget *parent) :
     QFrame(parent),
@@ -8,8 +9,9 @@ WidgetObjects::WidgetObjects(GameData& data, QWidget *parent) :
 {
     ui->setupUi(this);
     auto& tree = ui->treeView;
-//    tree->setSelectionMode(QAbstractItemView::SingleSelection);
     tree->setModel(&treeModelPawn);
+    pDelegatePawn = std::unique_ptr<ItemDelegatePawn>(new ItemDelegatePawn(tree));
+    tree->setItemDelegate(pDelegatePawn.get());
 }
 
 WidgetObjects::~WidgetObjects()

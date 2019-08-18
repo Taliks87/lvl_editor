@@ -20,7 +20,6 @@ public:
     ~WidgetMap();
 
     void setLevel(const QString& levelName);
-    void dropItemOnMap(int colum, int row);
 
 signals:
     void select_pawn(const QModelIndex& index);

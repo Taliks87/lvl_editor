@@ -76,11 +76,16 @@ struct PawnType
 {
     void deserialize(const QJsonObject& jsObj, const QString& rootPath);
 
+    bool isEmpty() const
+    {
+        return (icon.isNull() && fieldDescriptions.isEmpty());
+    }
+
     QPixmap icon;
     FieldDescriptions fieldDescriptions;
 };
 
-using PawnTypes = QHash<QString, PawnType>;
+using PawnTypes = QMap<QString, PawnType>;
 
 //TODO::is need?
 //inline QDataStream& operator<<(QDataStream& stream, const PtrFieldDescription& fieldDescription);

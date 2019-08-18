@@ -82,7 +82,7 @@ QVariant TableModelMap::data(const QModelIndex& index, int role) const
 bool TableModelMap::setRolesData(const QModelIndex& index, const QVariant &value, int role)
 {    
     if (role == Qt::EditRole) {
-        if(checkIndex(index) && value.isNull())
+        if(checkIndex(index) && value.isNull()) // remove pawn
         {
             GamePawn& gamePawn = (*pLevelMaps)[index.column()][index.row()];
             auto it = pLevelStutistic->find(gamePawn.typeName);
@@ -93,8 +93,8 @@ bool TableModelMap::setRolesData(const QModelIndex& index, const QVariant &value
                 qWarning() << "Type name not found" << gamePawn.typeName;
             }
             (gamePawn = GamePawn());
+            emit change_completed(index);
         }
-//        emit editCompleted(result);
         return true;
     }
     return false;
@@ -225,9 +225,7 @@ bool TableModelMap::dropMimeData(const QMimeData *data,
         std::swap(movedPawn, pawnOnArea);
 
     }    
-    WidgetMap* parentObj = dynamic_cast<WidgetMap*>(parent());
-    if(parentObj)
-        parentObj->dropItemOnMap(perentColumn, perentRow);
+    emit change_completed(parentIndex);
 
     return true;
 }
