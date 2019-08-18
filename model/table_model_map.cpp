@@ -56,9 +56,18 @@ QVariant TableModelMap::data(const QModelIndex& index, int role) const
                 switch(role){
                     case Qt::ToolTipRole:
                         return gamePawn.name;                                        
-                    case Qt::DecorationRole:
+                    case Qt::DecorationRole:                        
                         if(gamePawn.icon)
+                        {
                             return gamePawn.icon->scaled(32,32);
+                        } else {
+                            auto it = pPawnTypes->find(gamePawn.typeName);
+                            if(it != pPawnTypes->end())
+                            {
+                                gamePawn.icon = &it->icon;
+                                return gamePawn.icon->scaled(32,32);
+                            }
+                        }
                         break;
                     case Qt::BackgroundRole:
                         return QBrush(QColor(50,50,50));
@@ -81,21 +90,24 @@ QVariant TableModelMap::data(const QModelIndex& index, int role) const
 
 bool TableModelMap::setRolesData(const QModelIndex& index, const QVariant &value, int role)
 {    
-    if (role == Qt::EditRole) {
-        if(checkIndex(index) && value.isNull()) // remove pawn
-        {
-            GamePawn& gamePawn = (*pLevelMaps)[index.column()][index.row()];
-            auto it = pLevelStutistic->find(gamePawn.typeName);
-            if( it != pLevelStutistic->end() )
+    if(pLevelMaps && index.isValid())
+    {
+        if (role == Qt::EditRole) {
+            if(checkIndex(index) && value.isNull()) // remove pawn
             {
-                --(it.value());
-            } else {
-                qWarning() << "Type name not found" << gamePawn.typeName;
+                GamePawn& gamePawn = (*pLevelMaps)[index.column()][index.row()];
+                auto it = pLevelStutistic->find(gamePawn.typeName);
+                if( it != pLevelStutistic->end() )
+                {
+                    --(it.value());
+                } else {
+                    qWarning() << "Type name not found" << gamePawn.typeName;
+                }
+                (gamePawn = GamePawn());
+                emit change_completed(index);
             }
-            (gamePawn = GamePawn());
-            emit change_completed(index);
+            return true;
         }
-        return true;
     }
     return false;
 }
@@ -139,7 +151,6 @@ QMimeData* TableModelMap::mimeData(const QModelIndexList& indexes) const
 
     foreach (QModelIndex index, indexes) {
         if (index.isValid()) {
-//            ((*pLevelMaps)[index.column()][index.row()] = GamePawn());
             stream << index.column() << index.row();
         }
     }

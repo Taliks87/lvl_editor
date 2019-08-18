@@ -5,6 +5,7 @@
 #include <QHash>
 #include <QPoint>
 #include <QBitmap>
+#include <QDebug>
 
 struct IFieldValue
 {
@@ -54,7 +55,39 @@ using GPawnTypeId = unsigned;
 using FieldValues = QMap<QString, PtrIFieldValue>;
 //Object
 struct GamePawn
-{        
+{
+    GamePawn() :
+        typeName(""),
+        name(""),
+        icon(nullptr),
+        fieldValues()
+    {}
+
+    GamePawn(const GamePawn&) = default;
+
+    GamePawn(GamePawn&& gamePawn) :
+        typeName(gamePawn.typeName),
+        name(gamePawn.name),
+        icon(gamePawn.icon),
+        fieldValues(gamePawn.fieldValues)
+    {
+    }
+
+    GamePawn& operator=(const GamePawn& gamePawn) = default;
+
+    GamePawn& operator=(GamePawn&& gamePawn)
+    {
+        if(&gamePawn == this)
+            return *this;
+
+        typeName = gamePawn.typeName;
+        name = gamePawn.name;
+        icon = gamePawn.icon;
+        fieldValues = gamePawn.fieldValues;
+
+        return *this;
+    }
+
     QString typeName;    
     QString name;    
     const QPixmap* icon;
@@ -72,6 +105,37 @@ using LevelMap = QVector<QVector<GamePawn>>;
 
 struct LevelData
 {
+    LevelData() = default;
+    LevelData(const LevelData&) = default;
+
+    LevelData(const QPoint mapSize) :
+        statistic(),
+        map()
+    {
+        GamePawn pawn;
+        QVector<GamePawn> pawnRow(mapSize.y(), pawn);
+        map = LevelMap(QVector<QVector<GamePawn>>( mapSize.x(), pawnRow));
+    }
+
+    LevelData(LevelData&& levelData) :
+        statistic(levelData.statistic),
+        map(levelData.map)
+    {
+    }
+
+    LevelData& operator=(LevelData&) = default;
+    LevelData& operator=(const LevelData&) = default;
+
+    LevelData& operator=(LevelData&& levelData)
+    {
+        if(&levelData == this)
+            return *this;
+
+        statistic = levelData.statistic;
+        map = levelData.map;
+        return *this;
+    }
+
     LevelStatistic statistic;
     LevelMap map;
 };
@@ -85,8 +149,8 @@ struct GameData
     LevelsData levelsData;
 };
 
-//QDataStream& operator<<(QDataStream& stream, const LevelMap& levelMap);
-//QDataStream& operator>>(QDataStream& stream, LevelMap& levelMap);
+QDataStream& operator<<(QDataStream& stream, const LevelData& levelData);
+QDataStream& operator>>(QDataStream& stream, LevelData& levelData);
 QDataStream& operator<<(QDataStream& stream, const GamePawn& gamePawn);
 QDataStream& operator>>(QDataStream& stream, GamePawn& gamePawn);
 QDataStream& operator<<(QDataStream& stream, const PtrIFieldValue& pFieldValue);

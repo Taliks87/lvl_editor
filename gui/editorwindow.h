@@ -18,6 +18,7 @@ class WidgetObjects;
 enum LevelEvent{
     none = 0,
     create,
+    save,
     load
 };
 
@@ -29,9 +30,6 @@ public:
     EditorWindow(const EditorWindow&) = delete;
     EditorWindow& operator=(const EditorWindow&) = delete;
     ~EditorWindow() override;
-
-protected:
-    void showEvent(QShowEvent *event) override;
 
 private:
     void fillObjectTypesView();
@@ -46,12 +44,13 @@ private:
     const QString configPath;
     GameData gameData;
     LevelEvent levelEvent;
-    QString levelName;
+    QString activelevelName;
 
 private slots:
     void on_action_create_triggered();
-    void enter_level(const QString& levelName);
+    void enter_level(const QString& activelevelName);
     void on_action_save_triggered();
+    void on_action_load_triggered();
 };
 
 #endif // EDITORWINDOW_H

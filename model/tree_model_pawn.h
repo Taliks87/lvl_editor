@@ -91,7 +91,7 @@ public:
             QComboBox* comboBox = dynamic_cast<QComboBox*>(editor);
             if(comboBox)
             {
-                qWarning() << comboBox->currentIndex() << comboBox->itemText(comboBox->currentIndex());
+//                qWarning() << comboBox->currentIndex() << comboBox->itemText(comboBox->currentIndex());
                 model->setRolesData(index, comboBox->itemText(comboBox->currentIndex()));
             } else {
                 qWarning() << "wrong widget";

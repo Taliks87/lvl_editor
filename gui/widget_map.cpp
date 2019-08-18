@@ -30,7 +30,8 @@ WidgetMap::~WidgetMap()
 
 void WidgetMap::setLevel(const QString& levelName)
 {
-    tableModelMap.refreshLevelData(levelName);
+    ui->tableView->clearSelection();
+    tableModelMap.refreshLevelData(levelName);    
 }
 
 void WidgetMap::on_tableView_clicked(const QModelIndex& index)

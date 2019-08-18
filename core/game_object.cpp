@@ -8,6 +8,18 @@ FieldType IntValue::type() { return FieldType::INT; }
 
 FieldType SelectionValue::type() { return FieldType::SELECTION; }
 
+QDataStream& operator<<(QDataStream& stream, const LevelData& levelData)
+{
+    stream << levelData.statistic << levelData.map;
+    return stream;
+}
+
+QDataStream& operator>>(QDataStream& stream, LevelData& levelData)
+{
+    stream >> levelData.statistic >> levelData.map;
+    return stream;
+}
+
 //QDataStream& operator<<(QDataStream& stream, const LevelMap& levelMap)
 //{
 //    for(int col = 0; col < levelMap.size(); ++col)
@@ -32,7 +44,7 @@ QDataStream& operator<<(QDataStream& stream, const GamePawn& gamePawn)
 
 QDataStream& operator>>(QDataStream& stream, GamePawn& gamePawn)
 {
-    stream >> gamePawn.typeName >> gamePawn.name >> gamePawn.fieldValues;
+    stream >> gamePawn.typeName >> gamePawn.name >> gamePawn.fieldValues;    
     return stream;
 }
 

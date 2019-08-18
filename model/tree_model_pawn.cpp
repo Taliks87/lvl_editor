@@ -20,19 +20,22 @@ void TreeModelPawn::refreshLevelData(const QString& levelName)
 
 void TreeModelPawn::selectPawn(const QModelIndex& index)
 {
-    pawnPos = QPoint(index.column(), index.row());
-    pSelectedPawn = &(*pLevelMaps)[pawnPos.x()][pawnPos.y()];
-    auto itPawnType = pPawnTypes->find(pSelectedPawn->typeName);
-    if(itPawnType != pPawnTypes->end())
+    if(pLevelMaps != nullptr)
     {
-        if(!itPawnType->isEmpty())
+        pawnPos = QPoint(index.column(), index.row());
+        pSelectedPawn = &(*pLevelMaps)[pawnPos.x()][pawnPos.y()];
+        auto itPawnType = pPawnTypes->find(pSelectedPawn->typeName);
+        if(itPawnType != pPawnTypes->end())
         {
-            QMessageLogger();
+            if(!itPawnType->isEmpty())
+            {
+                QMessageLogger();
 
-            pFieldDescriptions = &itPawnType->fieldDescriptions;
-        } else {
-            pSelectedPawn = nullptr;
-            pFieldDescriptions = nullptr;
+                pFieldDescriptions = &itPawnType->fieldDescriptions;
+            } else {
+                pSelectedPawn = nullptr;
+                pFieldDescriptions = nullptr;
+            }
         }
     }
 }

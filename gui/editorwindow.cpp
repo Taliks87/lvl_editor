@@ -23,17 +23,49 @@ EditorWindow::EditorWindow(QWidget *parent) :
     configPath(rootPath + "/config.json"),
     gameData(),
     levelEvent(LevelEvent::none),
-    levelName("")
+    activelevelName("")
 {    
     ui->setupUi(this);
+    setFixedSize(1493, 547);
+
     widgetObjectTypes = new WidgetObjectTypes(gameData, ui->centralWidget);
     widgetMap = new WidgetMap(gameData, ui->centralWidget);
     widgetObjects = new WidgetObjects(gameData, ui->centralWidget);
     ui->horizontalLayout->addWidget(widgetObjectTypes);
     ui->horizontalLayout->addWidget(widgetMap);
     ui->horizontalLayout->addWidget(widgetObjects);
+
     connect(dialogLevelName, SIGNAL(enter_name(QString)), this, SLOT(enter_level(QString)));    
     connect(widgetMap, SIGNAL(select_pawn(const QModelIndex&)), widgetObjects, SLOT(select_pawn(const QModelIndex&)));
+
+    QFile configFile(configPath);
+    QFileInfo checkFile(configPath);
+    if(checkFile.exists() && checkFile.isFile() && configFile.open(QFile::ReadOnly | QIODevice::Text))
+    {
+        //load config.json
+        QString val = configFile.readAll();
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(val.toUtf8());
+        QJsonObject jsonObj = jsonDoc.object();
+        //read rules
+        QJsonValue jsNodeRules = jsonObj["rules"];
+        //read object_rules
+        gameData.rules.deserialize(jsNodeRules);
+        // read object type
+        QJsonArray jsArrayObjTypes = jsonObj["pawn_types"].toArray();
+        int amountObjTypes = jsArrayObjTypes.size();
+        for (int i = 0; i < amountObjTypes; ++i) {
+            QJsonObject jsObjType = jsArrayObjTypes[i].toObject();
+            gameData.pawnTypes[ jsObjType["name"].toString() ].deserialize(jsObjType,rootPath);
+        }
+        widgetObjectTypes->refreshData();
+    } else {
+        QMessageBox::critical(this, "Error", "Can't open config file");
+    }
+    configFile.close();
+    fillObjectTypesView();
+
+    levelEvent = LevelEvent::load;
+    enter_level("test");
 }
 
 EditorWindow::~EditorWindow()
@@ -45,45 +77,14 @@ EditorWindow::~EditorWindow()
     delete ui;
 }
 
-void EditorWindow::showEvent( QShowEvent* event ) {
-    QWidget::showEvent( event );
-    QFile configFile(configPath);
-    QFileInfo checkFile(configPath);
-    if(checkFile.exists() && checkFile.isFile() && configFile.open(QFile::ReadOnly | QIODevice::Text))
-    {
-        QString val = configFile.readAll();        
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(val.toUtf8());
-        QJsonObject jsonObj = jsonDoc.object();
-        //read rules
-        QJsonValue jsNodeRules = jsonObj["rules"];        
-        //read object_rules
-        gameData.rules.deserialize(jsNodeRules);
-        // read object type
-        QJsonArray jsArrayObjTypes = jsonObj["pawn_types"].toArray();
-        int amountObjTypes = jsArrayObjTypes.size();
-        for (int i = 0; i < amountObjTypes; ++i) {
-            QJsonObject jsObjType = jsArrayObjTypes[i].toObject();
-            gameData.pawnTypes[ jsObjType["name"].toString() ].deserialize(jsObjType,rootPath);
-        }
-        widgetObjectTypes->refreshData();
-    } else {        
-        QMessageBox::critical(this, "Error", "Can't open config file");
-    }
-    configFile.close();
-    fillObjectTypesView();
-
-    levelEvent = LevelEvent::load;
-    enter_level("test");
-}
-
 void EditorWindow::fillObjectTypesView()
 {
 //        ui->centralWidget
 }
 
-void EditorWindow::enter_level(const QString& name)
+void EditorWindow::enter_level(const QString& levelname)
 {
-    QString path = QDir::currentPath() + "/data/" + name + ".lvl";
+    QString path = QDir::currentPath() + "/data/" + levelname + ".lvl";
     QFile levelDataFile(path);
     QFileInfo checkFile(path);
     switch(levelEvent)
@@ -95,58 +96,72 @@ void EditorWindow::enter_level(const QString& name)
         } else {
             if(!levelDataFile.open(QFile::WriteOnly))
             {
-                QMessageBox::warning(this, "Can't create", "Can't create file");
+                QMessageBox::warning(this, "Can't create", "Can't create level");
             } else {                
                 QDataStream  stream(&levelDataFile);
                 stream.setVersion(QDataStream::Qt_5_13);
-                GamePawn pawn;
-                QVector<GamePawn> pawnRow(gameData.rules.mapSize.y(), pawn);
-                LevelMap levelMap(QVector<QVector<GamePawn>>( gameData.rules.mapSize.x(), pawnRow));
-                stream << levelMap;
+                LevelData levelData(gameData.rules.mapSize);
+                stream << levelData;
                 if(stream.status() != QDataStream::Ok)
                 {
                     QMessageBox::critical(this, "Error", "Error create file");
                 } else {
-                    levelName = name;
+                    activelevelName = levelname;
 
-                    gameData.levelsData[levelName].map = levelMap;
-                    widgetObjects->setLevel(levelName);
-                    widgetMap->setLevel(levelName);
-                    widgetObjectTypes->setLevel(levelName);
+                    gameData.levelsData[activelevelName] = std::move(levelData);
+                    widgetObjects->setLevel(activelevelName);
+                    widgetMap->setLevel(activelevelName);
+                    widgetObjectTypes->setLevel(activelevelName);
                 }
             }
         }
         break;
-
-    case LevelEvent::load: // open level from disk
-        if(!checkFile.exists() || !checkFile.isFile())
+    case LevelEvent::save:
+        if(!levelDataFile.open(QFile::WriteOnly))
         {
-            QMessageBox::warning(this, "Not found", "Lavel not found");
+            QMessageBox::warning(this, "Can't save", "Can't save level");
         } else {
-            if(!levelDataFile.open(QFile::ReadOnly))
+            QDataStream stream(&levelDataFile);
+            stream.setVersion(QDataStream::Qt_5_13);
+            stream << gameData.levelsData[activelevelName];
+            if(stream.status() != QDataStream::Ok)
             {
-                QMessageBox::warning(this, "Not found", "Level not found");
+                QMessageBox::critical(this, "Error", "Error write to file");
+            }
+        }
+        break;
+    case LevelEvent::load: // open level from disk
+        if(activelevelName != levelname)
+        {
+            if(!checkFile.exists() || !checkFile.isFile())
+            {
+                QMessageBox::warning(this, "Not found", "Lavel not found");
             } else {
-                QDataStream  stream(&levelDataFile);
-                stream.setVersion(QDataStream::Qt_5_13);
-    //            QByteArray fileContents = levelDataFile.readAll();
-                LevelMap levelMap;
-                stream >> levelMap;
-                if( (stream.status() != QDataStream::Ok) )
+                if(!levelDataFile.open(QFile::ReadOnly))
                 {
-                    QMessageBox::critical(this, "Error", "Error read file");
+                    QMessageBox::warning(this, "Not found", "Level not found");
                 } else {
-                    levelName = name;
-                    gameData.levelsData[levelName].map = levelMap;
-                    widgetObjects->setLevel(levelName);
-                    widgetMap->setLevel(levelName);
-                    widgetObjectTypes->setLevel(levelName);
+                    QDataStream  stream(&levelDataFile);
+                    stream.setVersion(QDataStream::Qt_5_13);
+
+                    LevelData levelData;
+                    stream >> levelData;
+                    if( (stream.status() != QDataStream::Ok) )
+                    {
+                        QMessageBox::critical(this, "Error", "Error read file");
+                    } else {
+                        activelevelName = levelname;
+                        gameData.levelsData[activelevelName] = std::move(levelData);
+                        widgetObjects->setLevel(activelevelName);
+                        widgetMap->setLevel(activelevelName);
+                        widgetObjectTypes->setLevel(activelevelName);
+                    }
                 }
             }
         }
         break;
     default:
-        qDebug() << "Wrong level event";
+        qWarning() << "Wrong level event";
     }
     levelDataFile.close();
     levelEvent = LevelEvent::none;
@@ -159,19 +174,15 @@ void EditorWindow::on_action_create_triggered()
     levelEvent = LevelEvent::create;
 }
 
-
-
 void EditorWindow::on_action_save_triggered()
 {
-//    if(!levelDataFile.open(QFile::WriteOnly))
-//    {
-//        QMessageBox::warning(this, "Can't save", "Can't save level");
-//    } else {
-//        QDataStream stream(&levelDataFile);
-//        stream.setVersion(QDataStream::Qt_5_13);
-//        if(stream.status() != QDataStream::Ok)
-//        {
-//            QMessageBox::critical(this, "Error", "Error write to file");
-//        }
-//    }
+    levelEvent = LevelEvent::save;
+    enter_level(activelevelName);
+}
+
+void EditorWindow::on_action_load_triggered()
+{
+    dialogLevelName->setWindowTitle("Load level");
+    dialogLevelName->show();
+    levelEvent = LevelEvent::load;
 }
