@@ -7,7 +7,7 @@
 #include "pawn_info/item_delegate_pawn.h"
 
 namespace Ui {
-class WidgetObjects;
+class WidgetPawnInfo;
 }
 
 class WidgetPawnInfo : public QFrame
@@ -20,7 +20,7 @@ public:
 
     void setLevel(const QString& levelName);
 private:
-    Ui::WidgetObjects* ui;
+    Ui::WidgetPawnInfo* ui;
     TableModelPawn tableModelPawn;
     std::unique_ptr<ItemDelegatePawn> pDelegatePawn;
 private slots:

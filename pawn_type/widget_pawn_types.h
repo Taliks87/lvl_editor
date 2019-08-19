@@ -6,7 +6,7 @@
 #include "data/game_data.h"
 
 namespace Ui {
-class WidgetObjectTypes;
+class WidgetPawnTypes;
 }
 
 class WidgetPawnTypes : public QFrame
@@ -23,7 +23,7 @@ public:
     void setLevel(const QString& levelName);
 
 private:
-    Ui::WidgetObjectTypes* ui;
+    Ui::WidgetPawnTypes* ui;
     ListModelObjectTypes listModelObjectTypes;
 };
 

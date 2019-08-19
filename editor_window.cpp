@@ -3,7 +3,7 @@
 #include "pawn_type/widget_pawn_types.h"
 #include "map/widget_map.h"
 #include "pawn_info/widget_pawn_info.h"
-#include "ui_editorwindow.h"
+#include "ui_editor_window.h"
 #include <QMessageBox>
 #include <QFile>
 #include <QDir>
@@ -26,7 +26,7 @@ EditorWindow::EditorWindow(QWidget *parent) :
     activelevelName("")
 {    
     ui->setupUi(this);
-    setFixedSize(1493, 547);
+    setFixedSize(1498, 550);
 
     widgetPawnTypes = new WidgetPawnTypes(gameData, ui->centralWidget);
     widgetMap = new WidgetMap(gameData, ui->centralWidget);

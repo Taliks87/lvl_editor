@@ -1,10 +1,10 @@
 #include "pawn_info/widget_pawn_info.h"
-#include "ui_widget_objects.h"
+#include "ui_widget_pawn_info.h"
 #include <memory>
 
 WidgetPawnInfo::WidgetPawnInfo(GameData& data, QWidget *parent) :
     QFrame(parent),
-    ui(new Ui::WidgetObjects),
+    ui(new Ui::WidgetPawnInfo),
     tableModelPawn(data, this)
 {
     ui->setupUi(this);

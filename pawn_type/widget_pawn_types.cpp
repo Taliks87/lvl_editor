@@ -1,10 +1,10 @@
 #include "pawn_type/widget_pawn_types.h"
-#include "ui_widget_object_types.h"
+#include "ui_widget_pawn_types.h"
 #include "data/pawn_type.h"
 
 WidgetPawnTypes::WidgetPawnTypes(GameData& data, QWidget *parent) :
     QFrame(parent),
-    ui(new Ui::WidgetObjectTypes),
+    ui(new Ui::WidgetPawnTypes),
     listModelObjectTypes(data, this)
 {
     ui->setupUi(this);

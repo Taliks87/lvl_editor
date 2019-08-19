@@ -246,7 +246,6 @@ bool TableModelPawn::setRolesData(const QModelIndex& index, const QVariant &valu
                         PtrFloatValue pFloat = std::dynamic_pointer_cast<FloatValue>(pFieldValue);
                         pFloat->value = value.toFloat();
                         return true;
-
                     }
                     case FieldType::SELECTION: {
                         PtrSelectionValue pSelection = std::dynamic_pointer_cast<SelectionValue>(pFieldValue);
