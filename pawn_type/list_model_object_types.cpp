@@ -20,13 +20,11 @@ void ListModelObjectTypes::refreshLevelData(const QString& levelName)
     pLevelStutistic = &pGameData->levelsData[levelName].statistic;
 }
 
-//amount elements
 int ListModelObjectTypes::rowCount(const QModelIndex& /*parent*/) const
 {
     return pPawnTypes->size();
 }
 
-//retune value
 QVariant ListModelObjectTypes::data(const QModelIndex& index, int role) const
 {        
 
@@ -59,20 +57,11 @@ QVariant ListModelObjectTypes::data(const QModelIndex& index, int role) const
     }    
 }
 
-////set new value
-//bool ListModelObjectTypes::setData(const QModelIndex &index, const QVariant &value, int role)
-//{
-//    if(role == Qt::EditRole)
-//        (*pPawnTypes)[index.row()].name = value.toString();
-//    return true;
-//}
-
 bool ListModelObjectTypes::setRolesData(const QModelIndex &/*index*/, const QVariant &/*value*/, int /*role*/)
 {
     return false;
 }
 
-//is can edit
 Qt::ItemFlags ListModelObjectTypes::flags(const QModelIndex& index) const
 {    
     if(!index.isValid())
@@ -86,13 +75,6 @@ Qt::DropActions ListModelObjectTypes::supportedDragActions() const
 {    
     return Qt::CopyAction;
 }
-
-//QStringList ListModelObjectTypes::mimeTypes() const
-//{
-//    QStringList types;
-//    types << "lvl_editor/pawn.type";
-//    return types;
-//}
 
 QMimeData* ListModelObjectTypes::mimeData(const QModelIndexList& indexes) const
 {

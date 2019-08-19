@@ -1,12 +1,29 @@
-#include "data/game_object.h"
+#include "data/game_data.h"
 
-IFieldValue::~IFieldValue() = default;
+LevelData::LevelData(const QPoint mapSize) :
+    statistic(),
+    map()
+{
+    GamePawn pawn;
+    QVector<GamePawn> pawnRow(mapSize.y(), pawn);
+    map = LevelMap(QVector<QVector<GamePawn>>( mapSize.x(), pawnRow));
+}
 
-FieldType FloatValue::type() { return FieldType::FLOAT; }
+LevelData::LevelData(LevelData&& levelData) :
+    statistic(levelData.statistic),
+    map(levelData.map)
+{
+}
 
-FieldType IntValue::type() { return FieldType::INT; }
+LevelData& LevelData::operator=(LevelData&& levelData)
+{
+    if(&levelData == this)
+        return *this;
 
-FieldType SelectionValue::type() { return FieldType::SELECTION; }
+    statistic = levelData.statistic;
+    map = levelData.map;
+    return *this;
+}
 
 QDataStream& operator<<(QDataStream& stream, const LevelData& levelData)
 {

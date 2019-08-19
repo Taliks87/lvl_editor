@@ -2,7 +2,7 @@
 #define WIDGET_MAP_H
 
 #include <QFrame>
-#include "data/game_object.h"
+#include "data/game_data.h"
 #include "map/table_model_map.h"
 #include "map/item_delegate_map.h"
 

@@ -2,7 +2,7 @@
 #define TABLE_MODEL_MAP_H
 
 #include <QAbstractTableModel>
-#include "data/game_object.h"
+#include "data/game_data.h"
 
 class TableModelMap : public QAbstractTableModel
 {

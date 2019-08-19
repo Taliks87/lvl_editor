@@ -2,7 +2,7 @@
 #define WIDGET_OBJECTS_H
 
 #include <QFrame>
-#include "data/game_object.h"
+#include "data/game_data.h"
 #include "pawn_info/table_model_pawn.h"
 #include "pawn_info/item_delegate_pawn.h"
 

@@ -221,8 +221,7 @@ bool TableModelPawn::setRolesData(const QModelIndex& index, const QVariant &valu
 {
     if (role == Qt::EditRole) {
         if(pSelectedPawn && !pSelectedPawn->typeName.isEmpty() && index.isValid())
-        {
-            int col =  index.column();
+        {            
             int row =  index.row();
             //Common fields
             if(row == NAME_FIELD)
@@ -233,31 +232,23 @@ bool TableModelPawn::setRolesData(const QModelIndex& index, const QVariant &valu
                 //Other fields
                 auto itPawn = pSelectedPawn->fieldValues.begin();
                 itPawn += index.row() - AMOUNT_COMMON_FIELD;
-                //column field value
-//                auto itDescription = (*pFieldDescriptions).begin();
-//                itDescription += index.row() - AMOUNT_COMMON_FIELD;
-//                const PtrFieldDescription& pFieldDescription = itDescription.value();
+
                 const PtrIFieldValue& pFieldValue = itPawn.value();
-//                if(pFieldValue->type() == itDescription.value()->type())
+
                 switch(pFieldValue->type())
                 {
                     case FieldType::INT: {
-//                        PtrIntDescription pIntType = std::dynamic_pointer_cast<IntDescription>(pFieldDescription);
-
                         PtrIntValue pInt = std::dynamic_pointer_cast<IntValue>(pFieldValue);
                         pInt->value = value.toInt();
                         return true;
-
                     }
                     case FieldType::FLOAT: {
-//                        PtrFloatDescription pFloatType = std::dynamic_pointer_cast<FloatDescription>(pFieldDescription);
                         PtrFloatValue pFloat = std::dynamic_pointer_cast<FloatValue>(pFieldValue);
                         pFloat->value = value.toFloat();
                         return true;
 
                     }
                     case FieldType::SELECTION: {
-//                            PtrSelectionDescription pSelectionType = std::dynamic_pointer_cast<SelectionDescription>(pFieldDescription);
                         PtrSelectionValue pSelection = std::dynamic_pointer_cast<SelectionValue>(pFieldValue);
                         pSelection->value = value.toString();
                         return true;
@@ -292,21 +283,6 @@ QVariant TableModelPawn::headerData(int section, Qt::Orientation /*orientation*/
         QFont serifFont("Times New Roman", 10, QFont::Bold, true);
         return serifFont;
     }
-
-//    if (role == Qt::TextAlignmentRole)
-//    {
-//        return Qt::AlignRight;
-//    }
-
-//    if (role == Qt::BackgroundRole)
-//    {
-//        return QBrush(Qt::blue);
-//    }
-
-//    if (role == Qt::ForegroundRole)
-//    {
-//        return QBrush(Qt::red);
-//    }
 
     return QVariant();
 }

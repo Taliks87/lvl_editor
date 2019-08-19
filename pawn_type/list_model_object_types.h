@@ -2,7 +2,7 @@
 #define LIST_MODEL_OBJECT_TYPES_H
 
 #include <QAbstractListModel>
-#include "data/game_object.h"
+#include "data/game_data.h"
 
 class ListModelObjectTypes : public QAbstractListModel
 {
@@ -19,8 +19,6 @@ public:
     bool setRolesData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     Qt::DropActions supportedDragActions() const override;
-//    Qt::DropActions supportedDropActions() const override;
-//    QStringList mimeTypes() const override;
     QMimeData* mimeData(const QModelIndexList &indexes) const override;
 
 private:

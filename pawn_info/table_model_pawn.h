@@ -2,7 +2,7 @@
 #define TREE_MODEL_PAWN_H
 
 #include <QAbstractTableModel>
-#include "data/game_object.h"
+#include "data/game_data.h"
 
 class TableModelPawn : public QAbstractTableModel
 {

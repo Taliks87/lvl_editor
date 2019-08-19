@@ -25,10 +25,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        data/game_data.cpp \
+        data/pawn_data.cpp \
+        data/pawn_type.cpp \
         main.cpp \
         editorwindow.cpp \
-        data/game_object.cpp \
-        data/game_object_description.cpp \
         dialog_windows/dialog_enter_level.cpp \
         map/item_delegate_map.cpp \
         map/widget_map.cpp \
@@ -40,9 +41,10 @@ SOURCES += \
         pawn_type/list_model_object_types.cpp
 
 HEADERS += \
+        data/game_data.h \
+        data/pawn_data.h \
+        data/pawn_type.h \
         editorwindow.h \
-        data/game_object.h \
-        data/game_object_description.h \
         dialog_windows/dialog_enter_level.h \
         map/item_delegate_map.h \
         map/widget_map.h \

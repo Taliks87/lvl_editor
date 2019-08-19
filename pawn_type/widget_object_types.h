@@ -3,7 +3,7 @@
 
 #include <QFrame>
 #include "pawn_type/list_model_object_types.h"
-#include "data/game_object.h"
+#include "data/game_data.h"
 
 namespace Ui {
 class WidgetObjectTypes;

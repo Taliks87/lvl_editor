@@ -1,4 +1,4 @@
-#include "data/game_object_description.h"
+#include "data/pawn_type.h"
 #include <QDebug>
 
 void FloatDescription::deserialize(const QJsonObject& jsObj)

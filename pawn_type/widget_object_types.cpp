@@ -1,6 +1,6 @@
 #include "pawn_type/widget_object_types.h"
 #include "ui_widget_object_types.h"
-#include "data/game_object_description.h"
+#include "data/pawn_type.h"
 
 WidgetObjectTypes::WidgetObjectTypes(GameData& data, QWidget *parent) :
     QFrame(parent),
