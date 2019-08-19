@@ -11,9 +11,9 @@ namespace Ui {
 }
 
 class DialogEnterLevel;
-class WidgetObjectTypes;
+class WidgetPawnTypes;
 class WidgetMap;
-class WidgetObjects;
+class WidgetPawnInfo;
 
 enum LevelEvent{
     none = 0,
@@ -36,9 +36,9 @@ private:
 
     Ui::EditorWindow *ui;
     DialogEnterLevel* dialogLevelName;
-    WidgetObjectTypes* widgetObjectTypes;
+    WidgetPawnTypes* widgetPawnTypes;
     WidgetMap* widgetMap;
-    WidgetObjects* widgetObjects;
+    WidgetPawnInfo* widgetPawnInfo;
 
     const QString rootPath;
     const QString configPath;

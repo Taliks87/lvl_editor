@@ -10,13 +10,13 @@ namespace Ui {
 class WidgetObjects;
 }
 
-class WidgetObjects : public QFrame
+class WidgetPawnInfo : public QFrame
 {
     Q_OBJECT
 
 public:
-    explicit WidgetObjects(GameData& data, QWidget* parent = nullptr);
-    ~WidgetObjects();
+    explicit WidgetPawnInfo(GameData& data, QWidget* parent = nullptr);
+    ~WidgetPawnInfo();
 
     void setLevel(const QString& levelName);
 private:

@@ -1,8 +1,8 @@
-#include "editorwindow.h"
+#include "editor_window.h"
 #include "dialog_windows/dialog_enter_level.h"
-#include "pawn_type/widget_object_types.h"
+#include "pawn_type/widget_pawn_types.h"
 #include "map/widget_map.h"
-#include "pawn_info/widget_objects.h"
+#include "pawn_info/widget_pawn_info.h"
 #include "ui_editorwindow.h"
 #include <QMessageBox>
 #include <QFile>
@@ -16,9 +16,9 @@ EditorWindow::EditorWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::EditorWindow),
     dialogLevelName(new DialogEnterLevel(this)),
-    widgetObjectTypes(nullptr),
+    widgetPawnTypes(nullptr),
     widgetMap(nullptr),
-    widgetObjects(nullptr),
+    widgetPawnInfo(nullptr),
     rootPath(QDir::currentPath() + "/data/"),
     configPath(rootPath + "/config.json"),
     gameData(),
@@ -28,15 +28,15 @@ EditorWindow::EditorWindow(QWidget *parent) :
     ui->setupUi(this);
     setFixedSize(1493, 547);
 
-    widgetObjectTypes = new WidgetObjectTypes(gameData, ui->centralWidget);
+    widgetPawnTypes = new WidgetPawnTypes(gameData, ui->centralWidget);
     widgetMap = new WidgetMap(gameData, ui->centralWidget);
-    widgetObjects = new WidgetObjects(gameData, ui->centralWidget);
-    ui->horizontalLayout->addWidget(widgetObjectTypes);
+    widgetPawnInfo = new WidgetPawnInfo(gameData, ui->centralWidget);
+    ui->horizontalLayout->addWidget(widgetPawnTypes);
     ui->horizontalLayout->addWidget(widgetMap);
-    ui->horizontalLayout->addWidget(widgetObjects);
+    ui->horizontalLayout->addWidget(widgetPawnInfo);
 
     connect(dialogLevelName, SIGNAL(enter_name(QString)), this, SLOT(enter_level(QString)));    
-    connect(widgetMap, SIGNAL(select_pawn(const QModelIndex&)), widgetObjects, SLOT(select_pawn(const QModelIndex&)));
+    connect(widgetMap, SIGNAL(select_pawn(const QModelIndex&)), widgetPawnInfo, SLOT(select_pawn(const QModelIndex&)));
 
     QFile configFile(configPath);
     QFileInfo checkFile(configPath);
@@ -59,7 +59,7 @@ EditorWindow::EditorWindow(QWidget *parent) :
                 QJsonObject jsObjType = jsArrayObjTypes[i].toObject();
                 gameData.pawnTypes[ jsObjType["name"].toString() ].deserialize(jsObjType,rootPath);
             }
-            widgetObjectTypes->refreshData();
+            widgetPawnTypes->refreshData();
             configFile.flush();
         } else {
             QMessageBox::critical(this, "Error", "Can't open config file");
@@ -87,9 +87,9 @@ EditorWindow::EditorWindow(QWidget *parent) :
 
 EditorWindow::~EditorWindow()
 {
-    delete widgetObjectTypes;
+    delete widgetPawnTypes;
     delete widgetMap;
-    delete widgetObjects;
+    delete widgetPawnInfo;
     delete dialogLevelName;
     delete ui;
 }
@@ -126,9 +126,9 @@ void EditorWindow::enter_level(const QString& levelname)
                     activelevelName = levelname;
 
                     gameData.levelsData[activelevelName] = std::move(levelData);
-                    widgetObjects->setLevel(activelevelName);
+                    widgetPawnInfo->setLevel(activelevelName);
                     widgetMap->setLevel(activelevelName);
-                    widgetObjectTypes->setLevel(activelevelName);
+                    widgetPawnTypes->setLevel(activelevelName);
                 }
             }
         }
@@ -169,9 +169,9 @@ void EditorWindow::enter_level(const QString& levelname)
                     } else {
                         activelevelName = levelname;
                         gameData.levelsData[activelevelName] = std::move(levelData);
-                        widgetObjects->setLevel(activelevelName);
+                        widgetPawnInfo->setLevel(activelevelName);
                         widgetMap->setLevel(activelevelName);
-                        widgetObjectTypes->setLevel(activelevelName);
+                        widgetPawnTypes->setLevel(activelevelName);
                     }
                     levelDataFile.flush();
                 }

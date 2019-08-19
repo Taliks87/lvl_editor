@@ -28,39 +28,41 @@ SOURCES += \
         data/game_data.cpp \
         data/pawn_data.cpp \
         data/pawn_type.cpp \
+        editor_window.cpp \
         main.cpp \
-        editorwindow.cpp \
         dialog_windows/dialog_enter_level.cpp \
         map/item_delegate_map.cpp \
         map/widget_map.cpp \
         map/table_model_map.cpp \
         pawn_info/item_delegate_pawn.cpp \
         pawn_info/table_model_pawn.cpp \
-        pawn_info/widget_objects.cpp \
-        pawn_type/widget_object_types.cpp \
-        pawn_type/list_model_object_types.cpp
+        pawn_info/widget_pawn_info.cpp \
+        pawn_type/list_model_object_types.cpp \
+        pawn_type/widget_pawn_types.cpp
 
 HEADERS += \
         data/game_data.h \
         data/pawn_data.h \
         data/pawn_type.h \
-        editorwindow.h \
         dialog_windows/dialog_enter_level.h \
+        editor_window.h \
         map/item_delegate_map.h \
         map/widget_map.h \
         map/table_model_map.h \
         pawn_info/item_delegate_pawn.h \
         pawn_info/table_model_pawn.h \
-        pawn_info/widget_objects.h \
-        pawn_type/widget_object_types.h \
-        pawn_type/list_model_object_types.h
+        pawn_info/widget_pawn_info.h \
+        pawn_type/list_model_object_types.h \
+        pawn_type/widget_pawn_types.h
 
 FORMS += \
         dialog_windows/dialog_enter_level.ui \
+        editor_window.ui \
         map/widget_map.ui \
-        pawn_info/widget_objects.ui \
-        pawn_type/widget_object_types.ui \
-        editorwindow.ui
+        pawn_info/widget_pawn_info.ui \
+        pawn_type/widget_pawn_types.ui
+
+
 
 INCLUDEPATH += $$PWD/include
 

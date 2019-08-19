@@ -1,8 +1,8 @@
-#include "pawn_type/widget_object_types.h"
+#include "pawn_type/widget_pawn_types.h"
 #include "ui_widget_object_types.h"
 #include "data/pawn_type.h"
 
-WidgetObjectTypes::WidgetObjectTypes(GameData& data, QWidget *parent) :
+WidgetPawnTypes::WidgetPawnTypes(GameData& data, QWidget *parent) :
     QFrame(parent),
     ui(new Ui::WidgetObjectTypes),
     listModelObjectTypes(data, this)
@@ -16,18 +16,17 @@ WidgetObjectTypes::WidgetObjectTypes(GameData& data, QWidget *parent) :
     list->setModel(&listModelObjectTypes);    
 }
 
-WidgetObjectTypes::~WidgetObjectTypes()
+WidgetPawnTypes::~WidgetPawnTypes()
 {
     delete ui;    
 }
 
-void WidgetObjectTypes::refreshData()
+void WidgetPawnTypes::refreshData()
 {
     ui->listView->reset();
 }
 
-
-void WidgetObjectTypes::setLevel(const QString& levelName)
+void WidgetPawnTypes::setLevel(const QString& levelName)
 {
     listModelObjectTypes.refreshLevelData(levelName);
 }

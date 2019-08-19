@@ -9,15 +9,15 @@ namespace Ui {
 class WidgetObjectTypes;
 }
 
-class WidgetObjectTypes : public QFrame
+class WidgetPawnTypes : public QFrame
 {
     Q_OBJECT
 
 public:
-    explicit WidgetObjectTypes(GameData& data, QWidget *parent = nullptr);
-    WidgetObjectTypes(const WidgetObjectTypes&) = delete;
-    WidgetObjectTypes& operator=(const WidgetObjectTypes&) = delete;
-    ~WidgetObjectTypes();
+    explicit WidgetPawnTypes(GameData& data, QWidget *parent = nullptr);
+    WidgetPawnTypes(const WidgetPawnTypes&) = delete;
+    WidgetPawnTypes& operator=(const WidgetPawnTypes&) = delete;
+    ~WidgetPawnTypes();
 
     void refreshData();
     void setLevel(const QString& levelName);
