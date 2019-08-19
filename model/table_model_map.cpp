@@ -70,7 +70,12 @@ QVariant TableModelMap::data(const QModelIndex& index, int role) const
                         }
                         break;
                     case Qt::BackgroundRole:
-                        return QBrush(QColor(50,50,50));
+                        if(pPawnTypes->find(gamePawn.typeName) == pPawnTypes->end())
+                        {
+                            return QBrush(Qt::red);
+                        } else {
+                            return QBrush(QColor(50,50,50));
+                        }
                 }
             } else {
                 //empty pawn
@@ -96,10 +101,12 @@ bool TableModelMap::setRolesData(const QModelIndex& index, const QVariant &value
             if(checkIndex(index) && value.isNull()) // remove pawn
             {
                 GamePawn& gamePawn = (*pLevelMaps)[index.column()][index.row()];
-                auto it = pLevelStutistic->find(gamePawn.typeName);
-                if( it != pLevelStutistic->end() )
+                auto& amountPawnByType = pLevelStutistic->amountPawnByType;
+                auto it = amountPawnByType.find(gamePawn.typeName);
+                if( it != amountPawnByType.end() )
                 {
                     --(it.value());
+                    --pLevelStutistic->amountPawn;
                 } else {
                     qWarning() << "Type name not found" << gamePawn.typeName;
                 }
@@ -187,13 +194,15 @@ bool TableModelMap::dropMimeData(const QMimeData *data,
         {
             GamePawn& newPown = ((*pLevelMaps)[perentColumn][perentRow] = GamePawn());
             newPown.typeName = typeName;
-            auto it = pLevelStutistic->find(typeName);
-            if( it == pLevelStutistic->end() )
+            auto& amountPawnByType = pLevelStutistic->amountPawnByType;
+            auto it = amountPawnByType.find(typeName);
+            if( it == amountPawnByType.end() )
             {
-                it = pLevelStutistic->insert(typeName,0);
+                it = amountPawnByType.insert(typeName,1);
             } else {
                 ++(it.value());
             }
+            ++pLevelStutistic->amountPawn;
             newPown.name = QString("pawn_") + typeName + QString("_") + QString::number(it.value());
             newPown.icon = &(itPawnTypes->icon);
             for(auto itDescription = itPawnTypes->fieldDescriptions.begin(); itDescription != itPawnTypes->fieldDescriptions.end(); ++itDescription)

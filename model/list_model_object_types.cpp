@@ -119,9 +119,11 @@ bool ListModelObjectTypes::isPawnLimit(const QModelIndex& index) const
         PawnTypes::iterator itPawnTypes = pPawnTypes->begin();
         itPawnTypes += index.row();
         auto& name = itPawnTypes.key();
-        auto it = pRules->mapAmountPawns.find(name);
-
-        return (it != pRules->mapAmountPawns.end()) && ((*pLevelStutistic)[name] >= pRules->mapAmountPawns[name]);
+        auto itInRules = pRules->mapAmountPawns.find(name);
+        auto itInLevel = pLevelStutistic->amountPawnByType.find(name);
+        return (itInRules != pRules->mapAmountPawns.end())
+                && (itInLevel != pLevelStutistic->amountPawnByType.end())
+                && (itInLevel.value() >= itInRules.value());
     }
     return true;
 }

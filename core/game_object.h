@@ -100,7 +100,12 @@ struct GamePawn
 //    return qHash (static_cast <qint64> (key.x () ) << 32 | key.y () );
 //}
 
-using LevelStatistic = QHash<QString, int>;
+struct LevelStatistic
+{
+    int amountPawn;
+    QHash<QString, int> amountPawnByType;
+};
+
 using LevelMap = QVector<QVector<GamePawn>>;
 
 struct LevelData
@@ -136,7 +141,7 @@ struct LevelData
         return *this;
     }
 
-    LevelStatistic statistic;
+    LevelStatistic statistic;    
     LevelMap map;
 };
 
@@ -151,6 +156,9 @@ struct GameData
 
 QDataStream& operator<<(QDataStream& stream, const LevelData& levelData);
 QDataStream& operator>>(QDataStream& stream, LevelData& levelData);
+QDataStream& operator<<(QDataStream& stream, const LevelStatistic& levelStatistic);
+QDataStream& operator>>(QDataStream& stream, LevelStatistic& levelStatistic);
+QDataStream& operator<<(QDataStream& stream, const LevelMap& levelMap);
 QDataStream& operator<<(QDataStream& stream, const GamePawn& gamePawn);
 QDataStream& operator>>(QDataStream& stream, GamePawn& gamePawn);
 QDataStream& operator<<(QDataStream& stream, const PtrIFieldValue& pFieldValue);

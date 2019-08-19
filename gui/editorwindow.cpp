@@ -144,7 +144,7 @@ void EditorWindow::enter_level(const QString& levelname)
                     QDataStream  stream(&levelDataFile);
                     stream.setVersion(QDataStream::Qt_5_13);
 
-                    LevelData levelData;
+                    LevelData levelData(gameData.rules.mapSize);
                     stream >> levelData;
                     if( (stream.status() != QDataStream::Ok) )
                     {

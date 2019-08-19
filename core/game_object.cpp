@@ -16,25 +16,45 @@ QDataStream& operator<<(QDataStream& stream, const LevelData& levelData)
 
 QDataStream& operator>>(QDataStream& stream, LevelData& levelData)
 {
-    stream >> levelData.statistic >> levelData.map;
+    stream >> levelData.statistic;
+    int col;
+    int row;
+    for(int i = 0; i < levelData.statistic.amountPawn; ++i)
+    {
+        stream >> col >> row;
+        stream >> levelData.map[col][row];
+    }
     return stream;
 }
 
-//QDataStream& operator<<(QDataStream& stream, const LevelMap& levelMap)
-//{
-//    for(int col = 0; col < levelMap.size(); ++col)
-//        for(int row = 0; row < levelMap[col].size(); ++row)
-//            stream << levelMap[col][row];
-//    return stream;
-//}
+QDataStream& operator<<(QDataStream& stream, const LevelStatistic& levelStatistic)
+{
+    stream << levelStatistic.amountPawn << levelStatistic.amountPawnByType;
+    return stream;
+}
 
-//QDataStream& operator>>(QDataStream& stream, LevelMap& levelMap)
-//{
-//    for(int col = 0; col < levelMap.size(); ++col)
-//        for(int row = 0; row < levelMap[col].size(); ++row)
-//            stream >> levelMap[col][row];
-//    return stream;
-//}
+QDataStream& operator>>(QDataStream& stream, LevelStatistic& levelStatistic)
+{
+    stream >> levelStatistic.amountPawn >> levelStatistic.amountPawnByType;
+    return stream;
+}
+
+QDataStream& operator<<(QDataStream& stream, const LevelMap& levelMap)
+{
+    for(int col = 0; col < levelMap.size(); ++col)
+    {
+        for(int row = 0; row < levelMap[col].size(); ++row)
+        {
+            const GamePawn& pawn = levelMap[col][row];
+            if(!pawn.typeName.isEmpty())
+            {
+                stream << col << row << levelMap[col][row];
+            }
+        }
+    }
+
+    return stream;
+}
 
 QDataStream& operator<<(QDataStream& stream, const GamePawn& gamePawn)
 {
@@ -70,8 +90,7 @@ QDataStream& operator<<(QDataStream& stream, const PtrIFieldValue& pFieldValue)
                 PtrSelectionValue pSelection = std::dynamic_pointer_cast<SelectionValue>(pFieldValue);
                 stream << pSelection->value;
             }
-            break;
-        //TODO::error
+            break;        
     }
 
     return stream;
@@ -103,8 +122,7 @@ QDataStream& operator>>(QDataStream& stream, PtrIFieldValue& pFieldValue)
                 stream >> ptr->value;
                 pFieldValue = ptr;
             }
-            break;
-            //TODO::error
+            break;            
     }
 
     return stream;

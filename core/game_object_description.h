@@ -87,14 +87,6 @@ struct PawnType
 
 using PawnTypes = QMap<QString, PawnType>;
 
-//TODO::is need?
-//inline QDataStream& operator<<(QDataStream& stream, const PtrFieldDescription& fieldDescription);
-//inline QDataStream& operator>>(QDataStream& stream, PtrFieldDescription& fieldDescription);
-//inline QDataStream& operator<<(QDataStream& stream, const PawnType& objectType);
-//inline QDataStream& operator>>(QDataStream& stream, PawnType& objectType);
-//QDataStream& operator<<(QDataStream& stream, const QVector<GObjectType>& objectTypes);
-//QDataStream& operator>>(QDataStream& stream, QVector<GObjectType>& objectTypes);
-
 
 
 
