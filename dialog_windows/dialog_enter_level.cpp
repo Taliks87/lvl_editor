@@ -1,4 +1,4 @@
-#include "gui/dialog_enter_level.h"
+#include "dialog_windows/dialog_enter_level.h"
 #include "ui_dialog_enter_level.h"
 #include <QPushButton>
 

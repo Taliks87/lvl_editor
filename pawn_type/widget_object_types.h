@@ -2,8 +2,8 @@
 #define WIDGET_OBJECT_TYPES_H
 
 #include <QFrame>
-#include "model/list_model_object_types.h"
-#include "core/game_object.h"
+#include "pawn_type/list_model_object_types.h"
+#include "data/game_object.h"
 
 namespace Ui {
 class WidgetObjectTypes;

@@ -1,4 +1,4 @@
-#include "core/game_object.h"
+#include "data/game_object.h"
 
 IFieldValue::~IFieldValue() = default;
 

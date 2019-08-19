@@ -1,8 +1,8 @@
-#include "gui/editorwindow.h"
-#include "gui/dialog_enter_level.h"
-#include "gui/widget_object_types.h"
-#include "gui/widget_map.h"
-#include "gui/widget_objects.h"
+#include "editorwindow.h"
+#include "dialog_windows/dialog_enter_level.h"
+#include "pawn_type/widget_object_types.h"
+#include "map/widget_map.h"
+#include "pawn_info/widget_objects.h"
 #include "ui_editorwindow.h"
 #include <QMessageBox>
 #include <QFile>
@@ -40,27 +40,44 @@ EditorWindow::EditorWindow(QWidget *parent) :
 
     QFile configFile(configPath);
     QFileInfo checkFile(configPath);
-    if(checkFile.exists() && checkFile.isFile() && configFile.open(QFile::ReadOnly | QIODevice::Text))
+    if(checkFile.exists() && checkFile.isFile())
     {
-        //load config.json
-        QString val = configFile.readAll();
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(val.toUtf8());
-        QJsonObject jsonObj = jsonDoc.object();
-        //read rules
-        QJsonValue jsNodeRules = jsonObj["rules"];
-        //read object_rules
-        gameData.rules.deserialize(jsNodeRules);
-        // read object type
-        QJsonArray jsArrayObjTypes = jsonObj["pawn_types"].toArray();
-        int amountObjTypes = jsArrayObjTypes.size();
-        for (int i = 0; i < amountObjTypes; ++i) {
-            QJsonObject jsObjType = jsArrayObjTypes[i].toObject();
-            gameData.pawnTypes[ jsObjType["name"].toString() ].deserialize(jsObjType,rootPath);
+        if( configFile.open(QFile::ReadOnly | QIODevice::Text) )
+        {
+            //load config.json
+            QString val = configFile.readAll();
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(val.toUtf8());
+            QJsonObject jsonObj = jsonDoc.object();
+            //read rules
+            QJsonValue jsNodeRules = jsonObj["rules"];
+            //read object_rules
+            gameData.rules.deserialize(jsNodeRules);
+            // read object type
+            QJsonArray jsArrayObjTypes = jsonObj["pawn_types"].toArray();
+            int amountObjTypes = jsArrayObjTypes.size();
+            for (int i = 0; i < amountObjTypes; ++i) {
+                QJsonObject jsObjType = jsArrayObjTypes[i].toObject();
+                gameData.pawnTypes[ jsObjType["name"].toString() ].deserialize(jsObjType,rootPath);
+            }
+            widgetObjectTypes->refreshData();
+            configFile.flush();
+        } else {
+            QMessageBox::critical(this, "Error", "Can't open config file");
         }
-        widgetObjectTypes->refreshData();
     } else {
-        QMessageBox::critical(this, "Error", "Can't open config file");
+        QMessageBox::warning(this, "Create config", "Create empty data/config.json file");
+        QDir dir(QDir::currentPath());
+        if(!dir.mkpath(rootPath))
+        {
+            QMessageBox::critical(this, "Error", "Can't create folder data");
+        } else {
+            if(!configFile.open(QFile::WriteOnly | QIODevice::Text))
+            {
+                QMessageBox::critical(this, "Error", "Can't create config file");
+            }
+        }
     }
+
     configFile.close();
     fillObjectTypesView();
 
@@ -156,6 +173,7 @@ void EditorWindow::enter_level(const QString& levelname)
                         widgetMap->setLevel(activelevelName);
                         widgetObjectTypes->setLevel(activelevelName);
                     }
+                    levelDataFile.flush();
                 }
             }
         }

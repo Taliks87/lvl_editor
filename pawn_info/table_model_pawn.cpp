@@ -1,8 +1,10 @@
-#include "tree_model_pawn.h"
+#include "pawn_info/table_model_pawn.h"
 #include <QStringList>
+#include <QBrush>
 #include <QDebug>
+#include <QFont>
 
-TreeModelPawn::TreeModelPawn(GameData& data, QObject* perent)
+TableModelPawn::TableModelPawn(GameData& data, QObject* perent)
     : QAbstractTableModel (perent)
     , pGameData(&data)
     , pPawnTypes(&data.pawnTypes)
@@ -13,14 +15,14 @@ TreeModelPawn::TreeModelPawn(GameData& data, QObject* perent)
 {
 }
 
-void TreeModelPawn::refreshLevelData(const QString& levelName)
+void TableModelPawn::refreshLevelData(const QString& levelName)
 {
     pLevelMaps = &pGameData->levelsData[levelName].map;
     pSelectedPawn = nullptr;
     pFieldDescriptions = nullptr;
 }
 
-void TreeModelPawn::selectPawn(const QModelIndex& index)
+void TableModelPawn::selectPawn(const QModelIndex& index)
 {
     if(pLevelMaps != nullptr)
     {
@@ -42,7 +44,7 @@ void TreeModelPawn::selectPawn(const QModelIndex& index)
     }
 }
 
-int TreeModelPawn::rowCount(const QModelIndex& /*parent*/) const
+int TableModelPawn::rowCount(const QModelIndex& /*parent*/) const
 {
     if(pSelectedPawn && !pSelectedPawn->typeName.isEmpty())
     {
@@ -54,12 +56,12 @@ int TreeModelPawn::rowCount(const QModelIndex& /*parent*/) const
     return 0;
 }
 
-int TreeModelPawn::columnCount(const QModelIndex& /*parent*/) const
+int TableModelPawn::columnCount(const QModelIndex& /*parent*/) const
 {
     return 2;
 }
 
-QVariant TreeModelPawn::data(const QModelIndex& index, int role) const
+QVariant TableModelPawn::data(const QModelIndex& index, int role) const
 {
     if(pSelectedPawn && !pSelectedPawn->typeName.isEmpty() && index.isValid())
     {
@@ -215,7 +217,7 @@ QVariant TreeModelPawn::data(const QModelIndex& index, int role) const
     return QVariant();
 }
 
-bool TreeModelPawn::setRolesData(const QModelIndex& index, const QVariant &value, int role)
+bool TableModelPawn::setRolesData(const QModelIndex& index, const QVariant &value, int role)
 {
     if (role == Qt::EditRole) {
         if(pSelectedPawn && !pSelectedPawn->typeName.isEmpty() && index.isValid())
@@ -267,7 +269,7 @@ bool TreeModelPawn::setRolesData(const QModelIndex& index, const QVariant &value
     return false;
 }
 
-Qt::ItemFlags TreeModelPawn::flags(const QModelIndex& index) const
+Qt::ItemFlags TableModelPawn::flags(const QModelIndex& index) const
 {
     if( (index.column() == 1) && (index.row() > POSITION_FIELD))
     {
@@ -276,7 +278,7 @@ Qt::ItemFlags TreeModelPawn::flags(const QModelIndex& index) const
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
-QVariant TreeModelPawn::headerData(int section, Qt::Orientation /*orientation*/, int role) const
+QVariant TableModelPawn::headerData(int section, Qt::Orientation /*orientation*/, int role) const
 {
     if (role == Qt::DisplayRole)
     {

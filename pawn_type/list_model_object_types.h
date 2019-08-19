@@ -2,7 +2,7 @@
 #define LIST_MODEL_OBJECT_TYPES_H
 
 #include <QAbstractListModel>
-#include "core/game_object.h"
+#include "data/game_object.h"
 
 class ListModelObjectTypes : public QAbstractListModel
 {

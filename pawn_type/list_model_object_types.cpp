@@ -1,4 +1,4 @@
-#include "list_model_object_types.h"
+#include "pawn_type/list_model_object_types.h"
 #include <QBrush>
 #include <QFont>
 #include <QPixmap>

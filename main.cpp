@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QHBoxLayout>
 
-#include "gui/editorwindow.h"
+#include "editorwindow.h"
 
 int main(int argc, char *argv[])
 {

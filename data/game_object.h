@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/game_object_description.h"
+#include "data/game_object_description.h"
 #include <QMap>
 #include <QHash>
 #include <QPoint>

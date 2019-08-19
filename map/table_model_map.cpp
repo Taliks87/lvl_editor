@@ -1,5 +1,5 @@
-#include "model/table_model_map.h"
-#include "gui/widget_map.h"
+#include "map/table_model_map.h"
+#include "map/widget_map.h"
 #include <QBrush>
 #include <QFont>
 #include <QPixmap>

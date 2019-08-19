@@ -1,4 +1,4 @@
-#include "core/game_object_description.h"
+#include "data/game_object_description.h"
 #include <QDebug>
 
 void FloatDescription::deserialize(const QJsonObject& jsObj)

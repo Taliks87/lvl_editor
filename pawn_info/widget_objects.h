@@ -2,8 +2,9 @@
 #define WIDGET_OBJECTS_H
 
 #include <QFrame>
-#include "core/game_object.h"
-#include "model/tree_model_pawn.h"
+#include "data/game_object.h"
+#include "pawn_info/table_model_pawn.h"
+#include "pawn_info/item_delegate_pawn.h"
 
 namespace Ui {
 class WidgetObjects;
@@ -20,7 +21,7 @@ public:
     void setLevel(const QString& levelName);
 private:
     Ui::WidgetObjects* ui;
-    TreeModelPawn treeModelPawn;
+    TableModelPawn tableModelPawn;
     std::unique_ptr<ItemDelegatePawn> pDelegatePawn;
 private slots:
     void select_pawn(const QModelIndex& index);

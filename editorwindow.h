@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QShowEvent>
 #include <QVector>
-#include "core/game_object.h"
+#include "data/game_object.h"
 
 namespace Ui {
     class EditorWindow;

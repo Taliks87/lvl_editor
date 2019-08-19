@@ -26,36 +26,39 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        gui/dialog_enter_level.cpp \
-        gui/editorwindow.cpp \
-        gui/widget_map.cpp \
-        gui/widget_objects.cpp \
-        gui/widget_object_types.cpp \
-        core/game_object.cpp \
-        core/game_object_description.cpp \
-        model/list_model_object_types.cpp \
-        model/table_model_map.cpp \
-        model/tree_model_pawn.cpp
+        editorwindow.cpp \
+        data/game_object.cpp \
+        data/game_object_description.cpp \
+        dialog_windows/dialog_enter_level.cpp \
+        map/item_delegate_map.cpp \
+        map/widget_map.cpp \
+        map/table_model_map.cpp \
+        pawn_info/item_delegate_pawn.cpp \
+        pawn_info/table_model_pawn.cpp \
+        pawn_info/widget_objects.cpp \
+        pawn_type/widget_object_types.cpp \
+        pawn_type/list_model_object_types.cpp
 
 HEADERS += \
-        gui/dialog_enter_level.h \
-        gui/editorwindow.h \
-        gui/widget_map.h \
-        gui/widget_object_types.h \
-        gui/widget_objects.h \
-        core/config.h \
-        core/game_object.h \
-        core/game_object_description.h \
-        model/list_model_object_types.h \
-        model/table_model_map.h \
-        model/tree_model_pawn.h
+        editorwindow.h \
+        data/game_object.h \
+        data/game_object_description.h \
+        dialog_windows/dialog_enter_level.h \
+        map/item_delegate_map.h \
+        map/widget_map.h \
+        map/table_model_map.h \
+        pawn_info/item_delegate_pawn.h \
+        pawn_info/table_model_pawn.h \
+        pawn_info/widget_objects.h \
+        pawn_type/widget_object_types.h \
+        pawn_type/list_model_object_types.h
 
 FORMS += \
-        gui/dialog_enter_level.ui \
-        gui/editorwindow.ui \
-        gui/widget_map.ui \
-        gui/widget_object_types.ui \
-        gui/widget_objects.ui
+        dialog_windows/dialog_enter_level.ui \
+        map/widget_map.ui \
+        pawn_info/widget_objects.ui \
+        pawn_type/widget_object_types.ui \
+        editorwindow.ui
 
 INCLUDEPATH += $$PWD/include
 
@@ -65,5 +68,3 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
-    res/game_icon/gameicon.qrc \
-    res/icon/icon.qrc

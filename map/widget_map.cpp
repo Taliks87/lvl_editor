@@ -1,14 +1,14 @@
+#include "map/widget_map.h"
+#include "ui_widget_map.h"
 #include <QSizePolicy>
 #include <QDropEvent>
 #include <QDebug>
-#include "widget_map.h"
-#include "ui_widget_map.h"
 
 WidgetMap::WidgetMap(GameData& data, QWidget *parent) :
     QFrame(parent),
     ui(new Ui::WidgetMap),
     tableModelMap(data, this),
-    pDelegateMap(nullptr)
+    pDelegateMap()
 {    
     ui->setupUi(this);
     auto& table = ui->tableView;
@@ -17,14 +17,13 @@ WidgetMap::WidgetMap(GameData& data, QWidget *parent) :
     table->setAcceptDrops(true);
     table->setDropIndicatorShown(true);
     table->setModel(&tableModelMap);
-    pDelegateMap = new ItemDelegateMap(table);
-    table->setItemDelegate(pDelegateMap);
+    pDelegateMap = std::unique_ptr<ItemDelegateMap>(new ItemDelegateMap(table));
+    table->setItemDelegate(pDelegateMap.get());
     connect(&tableModelMap, SIGNAL(change_completed(const QModelIndex&)), this, SLOT(on_tableView_clicked(const QModelIndex&)));
 }
 
 WidgetMap::~WidgetMap()
-{
-    delete pDelegateMap;
+{    
     delete ui;
 }
 

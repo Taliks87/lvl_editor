@@ -2,8 +2,9 @@
 #define WIDGET_MAP_H
 
 #include <QFrame>
-#include "core/game_object.h"
-#include "model/table_model_map.h"
+#include "data/game_object.h"
+#include "map/table_model_map.h"
+#include "map/item_delegate_map.h"
 
 namespace Ui {
 class WidgetMap;
@@ -29,7 +30,7 @@ private slots:
 private:
     Ui::WidgetMap* ui;
     TableModelMap tableModelMap;
-    ItemDelegateMap* pDelegateMap;
+    std::unique_ptr<ItemDelegateMap> pDelegateMap;
 };
 
 #endif // WIDGET_MAP_H
