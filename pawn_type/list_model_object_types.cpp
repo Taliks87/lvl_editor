@@ -27,7 +27,6 @@ int ListModelObjectTypes::rowCount(const QModelIndex& /*parent*/) const
 
 QVariant ListModelObjectTypes::data(const QModelIndex& index, int role) const
 {        
-
     PawnTypes::iterator it = pPawnTypes->begin();
     it += index.row();
     auto& name = it.key();

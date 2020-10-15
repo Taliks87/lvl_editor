@@ -220,7 +220,7 @@ bool TableModelMap::dropMimeData(const QMimeData *data,
                         newPown.fieldValues[itDescription.key()] = PtrIFieldValue(new FloatValue(pFloat->from));
                         break;
                     }
-                case FieldType::SELECTION: {
+                    case FieldType::SELECTION: {
                         PtrSelectionDescription pSelection = std::dynamic_pointer_cast<SelectionDescription>(pDescription);
                         newPown.fieldValues[itDescription.key()] = PtrIFieldValue(new SelectionValue(*pSelection->variants.begin()));
                         break;
